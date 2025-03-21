@@ -41,8 +41,16 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 const AdminDashboard: React.FC = () => {
   const token = localStorage.getItem("token");
-  const role = token ? jwtDecode<{ role: string }>(token).role : "";
   const navigate = useNavigate();
+  let role: string | null = null;
+
+  try {
+    role = token ? jwtDecode<{ role: string }>(token).role : null;
+  } catch (e) {
+    console.error("Invalid token:", e);
+    navigate("/auth");
+    return null;
+  }
 
   const { data, isLoading, error } = useQuery<DashboardData>({
     queryKey: ["adminDashboard"],
@@ -50,10 +58,10 @@ const AdminDashboard: React.FC = () => {
     enabled: !!token && role === "admin",
   });
 
-  // if (!token) {
-  //   navigate("/auth");
-  //   return null;
-  // }
+  if (!token) {
+    navigate("/auth");
+    return null;
+  }
 
   if (role !== "admin") {
     toast.error("Admin access required!");
@@ -65,7 +73,7 @@ const AdminDashboard: React.FC = () => {
   if (error)
     return (
       <div className="text-center mt-10 text-red-500">
-        Error loading dashboard
+        Error loading dashboard: {(error as Error).message}
       </div>
     );
 
@@ -79,6 +87,7 @@ const AdminDashboard: React.FC = () => {
       >
         Admin Dashboard
       </motion.h1>
+
       {/* Navigation */}
       <div className="mb-6 flex justify-center space-x-4">
         <Link
@@ -93,7 +102,14 @@ const AdminDashboard: React.FC = () => {
         >
           Manage Products
         </Link>
+        <Link
+          to="/app/admin/orders"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          Manage Orders
+        </Link>
       </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <motion.div
@@ -104,7 +120,7 @@ const AdminDashboard: React.FC = () => {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-xl font-semibold text-blue-800">Total Users</h2>
-          <p className="text-3xl font-bold text-blue-600">{data?.users}</p>
+          <p className="text-3xl font-bold text-blue-600">{data?.users || 0}</p>
         </motion.div>
         <motion.div
           className="bg-green-100 p-6 rounded-lg shadow-lg text-center"
@@ -114,7 +130,7 @@ const AdminDashboard: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <h2 className="text-xl font-semibold text-green-800">Total Orders</h2>
-          <p className="text-3xl font-bold text-green-600">{data?.orders}</p>
+          <p className="text-3xl font-bold text-green-600">{data?.orders || 0}</p>
         </motion.div>
         <motion.div
           className="bg-yellow-100 p-6 rounded-lg shadow-lg text-center"
@@ -125,7 +141,7 @@ const AdminDashboard: React.FC = () => {
         >
           <h2 className="text-xl font-semibold text-yellow-800">Revenue</h2>
           <p className="text-3xl font-bold text-yellow-600">
-            ₹{data?.revenue.toLocaleString()}
+            ₹{data?.revenue.toLocaleString() || "0"}
           </p>
         </motion.div>
         <motion.div
@@ -135,10 +151,8 @@ const AdminDashboard: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <h2 className="text-xl font-semibold text-purple-800">
-            Total Products
-          </h2>
-          <p className="text-3xl font-bold text-purple-600">{data?.products}</p>
+          <h2 className="text-xl font-semibold text-purple-800">Total Products</h2>
+          <p className="text-3xl font-bold text-purple-600">{data?.products || 0}</p>
         </motion.div>
       </div>
 
@@ -155,13 +169,11 @@ const AdminDashboard: React.FC = () => {
             Revenue Trend (Last 6 Months)
           </h2>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data?.revenueTrend}>
+            <BarChart data={data?.revenueTrend || []}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip
-                formatter={(value: number) => `₹${value.toLocaleString()}`}
-              />
+              <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}`} />
               <Legend />
               <Bar dataKey="total" fill="#82ca9d" name="Revenue" />
             </BarChart>
@@ -179,7 +191,7 @@ const AdminDashboard: React.FC = () => {
             User Growth (Last 6 Months)
           </h2>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data?.userGrowth}>
+            <BarChart data={data?.userGrowth || []}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
@@ -198,41 +210,36 @@ const AdminDashboard: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="bg-white p-4 rounded-lg shadow-md mb-8"
       >
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          Top Selling Products
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={data?.topProducts}
-              dataKey="totalSold"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              fill="#8884d8"
-              label={({ name, percent }) =>
-                `${name} (${(percent * 100).toFixed(0)}%)`
-              }
-            >
-              {data?.topProducts.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip
-              formatter={(value: number, name: string, props) => [
-                `${value} units`,
-                props.payload.totalRevenue
-                  ? `₹${props.payload.totalRevenue.toLocaleString()}`
-                  : name,
-              ]}
-            />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Top Selling Products</h2>
+        {data?.topProducts.length ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={data.topProducts}
+                dataKey="totalSold"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#8884d8"
+                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+              >
+                {data.topProducts.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(value: number, _name: string, props) => [
+                  `${value} units`,
+                  `₹${props.payload.totalRevenue.toLocaleString()}`,
+                ]}
+              />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <p className="text-gray-600 text-center">No top products data available.</p>
+        )}
       </motion.div>
 
       {/* Recent Orders */}
@@ -242,9 +249,7 @@ const AdminDashboard: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="bg-white p-4 rounded-lg shadow-md"
       >
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          Recent Orders
-        </h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Recent Orders</h2>
         {data?.recentOrders.length ? (
           <div className="space-y-4">
             {data.recentOrders.map((order) => (
@@ -258,16 +263,14 @@ const AdminDashboard: React.FC = () => {
                 <div>
                   <p className="font-semibold">Order #{order._id}</p>
                   <p className="text-gray-600">
-                    User: {order.userId.username} ({order.userId.email})
+                    User: {order?.userId?.username} ({order?.userId?.email})
                   </p>
                   <p className="text-gray-600">
                     Date: {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold">
-                    ₹{order.total.toLocaleString()}
-                  </p>
+                  <p className="font-semibold">₹{order.total.toLocaleString()}</p>
                   <span
                     className={`text-sm px-2 py-1 rounded ${
                       order.paymentStatus === "completed"

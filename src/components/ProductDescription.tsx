@@ -5,24 +5,18 @@ import { toast } from "react-toastify";
 import Modal from "./Modal";
 import ProductReviews from "./ProductReviews";
 import { motion } from "framer-motion";
+import { ProductData } from "../types/types";
+
 
 interface ProductDescriptionProps {
-  product: {
-    _id: string;
-    name: string;
-    price: number; // Price in INR
-    description: string;
-    image: string;
-    stock: number;
-    avgRating?: number;
-  };
-  // userId: string;
+  product: ProductData;
   isOpen: boolean;
   onClose: () => void;
 }
 
 const ProductDescription: React.FC<ProductDescriptionProps> = React.memo(
   ({ product, isOpen, onClose }) => {
+    console.log(product, "product");
     const dispatch = useDispatch();
 
     const handleAddToCart = () => {
@@ -30,7 +24,17 @@ const ProductDescription: React.FC<ProductDescriptionProps> = React.memo(
         toast.error("Out of stock!");
         return;
       }
-      dispatch(addToCart({ productId: product._id, name: product.name, price: product.price, quantity: 1,image:product.image }));
+      dispatch(
+        addToCart({
+          productId: product._id,
+          name: product.name,
+          price: product.discount?.discountedPrice
+            ? product?.discount?.discountedPrice
+            : product.price,
+          quantity: 1,
+          image: product.image,
+        })
+      );
       toast.success(`${product.name} added to cart!`);
     };
 
@@ -42,10 +46,23 @@ const ProductDescription: React.FC<ProductDescriptionProps> = React.memo(
             alt={product.name}
             className="w-full h-64 object-contain rounded"
           />
-          <p className="text-lg font-bold">₹{product.price.toLocaleString("en-IN")}</p>
+          {/* {product.discount ? (
+            <>
+              <p className="text-gray-500 line-through">
+                ₹{product.price}
+              </p>
+              <p className="text-green-600 font-bold">
+                ₹{product.discount.discountedPrice}
+              </p>
+            </>
+          ) : ( */}
+            <p className="text-gray-700">₹{product.price}</p>
+          {/* )} */}
           <p className="text-gray-600">{product.description}</p>
           {product.avgRating !== undefined && (
-            <p className="text-sm text-yellow-500">Rating: {product.avgRating} / 5</p>
+            <p className="text-sm text-yellow-500">
+              Rating: {product.avgRating} / 5
+            </p>
           )}
           <p>Stock: {product.stock}</p>
           <motion.button
@@ -70,6 +87,6 @@ const ProductDescription: React.FC<ProductDescriptionProps> = React.memo(
   }
 );
 
-ProductDescription.displayName = "ProductDescription"; 
+ProductDescription.displayName = "ProductDescription";
 
 export default ProductDescription;

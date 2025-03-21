@@ -23,6 +23,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import UserManagement from "./pages/UserManagement";
 import ProductManagement from "./pages/ProductManagement";
 import OrderManagement from "./pages/OrderManagement";
+import DiscountManagement from "./pages/DiscountManagement";
 
 const queryClient = new QueryClient();
 
@@ -119,6 +120,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <OrderManagement />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "admin/discounts",
+        element: (
+          <PrivateRoute>
+            <DiscountManagement />
           </PrivateRoute>
         ),
       },

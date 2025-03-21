@@ -11,13 +11,15 @@ import {
   FaChartBar,
   FaUser,
   FaBox,
+  FaTag,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
 import { toast } from "react-toastify";
-import { useMutation } from "@tanstack/react-query";
-import { logoutUser } from "../api/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getWishlist, logoutUser } from "../api/api";
 import { jwtDecode } from "jwt-decode";
+import { WishlistItem } from "./Product";
 
 const Navbar: React.FC = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -25,6 +27,13 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const role = token ? jwtDecode<{ role: string }>(token).role : "";
+  const userId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+
+  const { data: wishlist} = useQuery<WishlistItem[]>({
+    queryKey: ["wishlist", userId],
+    queryFn: () => getWishlist(userId!),
+    enabled: !!userId,
+  });
 
   const logoutMutation = useMutation({
     mutationFn: logoutUser,
@@ -132,6 +141,15 @@ const Navbar: React.FC = () => {
               className="flex items-center hover:text-gray-200 transition-colors"
             >
               <FaHeart className="mr-1" /> Wishlist
+              {wishlist && wishlist?.length > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="ml-1 bg-red-500 text-white rounded-full px-2 py-1 text-xs"
+                >
+                  {wishlist?.length}
+                </motion.span>
+              )}
             </Link>
           </motion.div>
           <motion.div
@@ -201,6 +219,19 @@ const Navbar: React.FC = () => {
                   className="flex items-center hover:text-gray-200 transition-colors"
                 >
                   <FaShoppingCart className="mr-1" /> Orders
+                </Link>
+              </motion.div>
+              <motion.div
+                custom={5}
+                variants={navItemVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <Link
+                  to="/app/admin/discounts"
+                  className="flex items-center hover:text-gray-200 transition-colors"
+                >
+                  <FaTag className="mr-1" /> Discounts
                 </Link>
               </motion.div>
             </>

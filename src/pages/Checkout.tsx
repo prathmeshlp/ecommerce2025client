@@ -4,27 +4,71 @@ import { RootState } from "../redux/store";
 import { useMutation } from "@tanstack/react-query";
 import { createOrder, verifyPayment } from "../api/api";
 import { motion } from "framer-motion";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { useNavigate, useLocation } from "react-router-dom";
 import useCustomFormik from "../hooks/useCustomFormik";
 import * as Yup from "yup";
-import { clearCart } from "../redux/cartSlice"; 
-import { useDispatch } from "react-redux"; 
+import { clearCart } from "../redux/cartSlice";
+import { useDispatch } from "react-redux";
+import { ShippingAddress } from "../types/types";
+
+// Extend the Window interface to include Razorpay
+declare global {
+  interface Window {
+    Razorpay?: any;
+  }
+}
+
+interface CartItem {
+  productId: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
+
+interface AppliedDiscount {
+  code: string;
+  discountAmount: number;
+  newSubtotal: number;
+  discountedItems: { productId: string; discountedPrice: number }[];
+}
+
+interface OrderResponse {
+  orderId: string;
+  razorpayOrderId: string;
+  amount: number;
+  key: string;
+}
 
 const Checkout: React.FC = () => {
-    const [scriptLoaded, setScriptLoaded] = useState(false);
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const cartItems = useSelector((state: RootState) => state.cart.items) as CartItem[];
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Add this
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const { appliedDiscount, cartItems: passedCartItems } = (location.state as {
+    appliedDiscount?: AppliedDiscount;
+    cartItems?: CartItem[];
+  }) || {};
+  const itemsToDisplay = passedCartItems || cartItems;
 
-// Load Razorpay script dynamically
-useEffect(() => {
+  const subtotal = itemsToDisplay.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = appliedDiscount ? appliedDiscount.newSubtotal : subtotal;
+console.log(appliedDiscount,"appileddis")
+  
+  useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
-    script.onload = () => setScriptLoaded(true);
-    script.onerror = () => toast.error("Failed to load Razorpay script.");
+    script.onload = () => {
+      console.log("Razorpay script loaded");
+      setScriptLoaded(true);
+    };
+    script.onerror = () => {
+      console.error("Failed to load Razorpay script");
+      toast.error("Failed to load payment gateway.");
+    };
     document.body.appendChild(script);
 
     return () => {
@@ -54,21 +98,23 @@ useEffect(() => {
 
   const orderMutation = useMutation({
     mutationFn: createOrder,
-    onSuccess: (data) => {
+    onSuccess: (data: OrderResponse) => {
+      console.log("Order created:", data);
       initiateRazorpayPayment(data);
     },
-    onError: () => toast.error("Failed to create order."),
+    onError: (error: any) => {
+      console.error("Order creation error:", error.response?.data);
+      toast.error(error.response?.data?.message || "Failed to create order.");
+    },
   });
 
   const verifyMutation = useMutation({
     mutationFn: verifyPayment,
     onSuccess: (data) => {
       if (data.success) {
-        toast.success(
-          "Order Placed Successfully!"
-        );
-        dispatch(clearCart()); // Clear Cart
-        navigate("/app/orders"); // Redirect to orders page
+        toast.success("Order Placed Successfully!");
+        dispatch(clearCart());
+        navigate("/app/orders");
       } else {
         toast.error("Payment verification failed.");
       }
@@ -77,14 +123,24 @@ useEffect(() => {
   });
 
   const handleCheckout = (shippingAddress: typeof formik.values) => {
-    if (cartItems.length === 0) {
+    if (itemsToDisplay.length === 0) {
       toast.error("Cart is empty!");
       return;
     }
-    orderMutation.mutate({ items: cartItems, shippingAddress });
+    const payload = {
+      items: itemsToDisplay,
+      shippingAddress: shippingAddress as ShippingAddress,
+      discountCode: appliedDiscount?.code,
+    };
+    console.log("Creating order with payload:", payload);
+    orderMutation.mutate(payload);
   };
 
-  const initiateRazorpayPayment = (data: { orderId: string; razorpayOrderId: string; amount: number; key: string }) => {
+  const initiateRazorpayPayment = (data: OrderResponse) => {
+    if (!window.Razorpay) {
+      toast.error("Payment gateway not loaded.");
+      return;
+    }
     const options = {
       key: data.key,
       amount: data.amount,
@@ -93,6 +149,7 @@ useEffect(() => {
       description: "Order Payment",
       order_id: data.razorpayOrderId,
       handler: (response: any) => {
+        console.log("Payment response:", response);
         verifyMutation.mutate({
           orderId: data.orderId,
           razorpay_payment_id: response.razorpay_payment_id,
@@ -101,14 +158,18 @@ useEffect(() => {
         });
       },
       prefill: {
-        email: "customer@example.com", // You can fetch from user profile
+        email: "customer@example.com",
       },
       theme: {
         color: "#3b82f6",
       },
     };
 
-    const rzp = new (window as any).Razorpay(options);
+    const rzp = new window.Razorpay(options);
+    rzp.on("payment.failed", (response: any) => {
+      console.error("Payment failed:", response.error);
+      toast.error("Payment failed: " + response.error.description);
+    });
     rzp.open();
   };
 
@@ -125,14 +186,45 @@ useEffect(() => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-          {cartItems.map((item) => (
-            <div key={item.productId} className="flex justify-between p-2 border-b">
-              <span>{item.name} (x{item.quantity})</span>
-              <span>₹{(item.price * item.quantity).toLocaleString()}</span>
+          {itemsToDisplay.map((item) => {
+            const discountedPrice =
+              appliedDiscount?.discountedItems.find((d) => d.productId === item.productId)?.discountedPrice ||
+              item.price;
+            return (
+              <div key={item.productId} className="flex justify-between p-2 border-b">
+                <span>
+                  {item.name} (x{item.quantity})
+                </span>
+                {appliedDiscount ? (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-400 text-sm line-through">
+                      ₹{(item.price * item.quantity).toLocaleString()}
+                    </span>
+                    <span className="text-green-700 font-bold">
+                      ₹{(discountedPrice * item.quantity).toLocaleString()}
+                    </span>
+                  </div>
+                ) : (
+                  <span>₹{(item.price * item.quantity).toLocaleString()}</span>
+                )}
+              </div>
+            );
+          })}
+          <div className="mt-4 space-y-2">
+            <div className="flex justify-between">
+              <span>Subtotal:</span>
+              <span>₹{subtotal.toLocaleString()}</span>
             </div>
-          ))}
-          <div className="text-right mt-4">
-            <p className="text-xl font-semibold">Total: ₹{total.toLocaleString()}</p>
+            {appliedDiscount && (
+              <div className="flex justify-between text-green-600">
+                <span>Discount ({appliedDiscount.code}):</span>
+                <span>-₹{appliedDiscount.discountAmount.toLocaleString()}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-xl font-semibold">
+              <span>Total:</span>
+              <span>₹{total.toLocaleString()}</span>
+            </div>
           </div>
         </div>
         <div>
@@ -182,7 +274,7 @@ useEffect(() => {
                 placeholder="Zip"
                 className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-               {formik.touched.zip && typeof formik.errors.zip === "string" && (
+              {formik.touched.zip && typeof formik.errors.zip === "string" && (
                 <p className="text-red-500 text-sm">{formik.errors.zip}</p>
               )}
             </div>
@@ -194,7 +286,7 @@ useEffect(() => {
                 placeholder="Country"
                 className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-               {formik.touched.country && typeof formik.errors.country === "string" && (
+              {formik.touched.country && typeof formik.errors.country === "string" && (
                 <p className="text-red-500 text-sm">{formik.errors.country}</p>
               )}
             </div>
@@ -209,9 +301,7 @@ useEffect(() => {
             </motion.button>
           </form>
         </div>
-        
       </div>
-      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     </div>
   );
 };

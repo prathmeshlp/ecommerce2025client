@@ -6,18 +6,13 @@ import {
   deleteProductAdmin,
   getUniqueCategories,
   getProductsAdmin,
+  bulkUpdateProducts,
 } from "../api/api";
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import {
-  FaEdit,
-  FaTrash,
-  FaPlus,
-  FaArrowLeft,
-  FaArrowRight,
-} from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaArrowLeft, FaArrowRight, FaTimes } from "react-icons/fa";
 
 interface Product {
   _id: string;
@@ -36,6 +31,8 @@ interface ProductsResponse {
   totalPages: number;
 }
 
+const LOW_STOCK_THRESHOLD = 10; // Define low stock threshold
+
 const ProductManagement: React.FC = () => {
   const token = localStorage.getItem("token");
   const role = token ? jwtDecode<{ role: string }>(token).role : "";
@@ -51,25 +48,22 @@ const ProductManagement: React.FC = () => {
   });
   const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [page, setPage] = useState(1);
-  const limit = 10; // Products per page
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [bulkStock, setBulkStock] = useState<number>(0);
+  const limit = 10;
 
-  const {
-    data: productsData,
-    isLoading: productsLoading,
-    error: productsError,
-  } = useQuery<ProductsResponse>({
+  const { data: productsData, isLoading: productsLoading, error: productsError } = useQuery<ProductsResponse>({
     queryKey: ["products", page],
     queryFn: () => getProductsAdmin(page, limit),
     enabled: !!token && role === "admin",
   });
 
-  const { data: categories, isLoading: categoriesLoading } = useQuery<string[]>(
-    {
-      queryKey: ["categories"],
-      queryFn: getUniqueCategories,
-      enabled: !!token && role === "admin",
-    }
-  );
+  const { data: categories, isLoading: categoriesLoading } = useQuery<string[]>({
+    queryKey: ["categories"],
+    queryFn: getUniqueCategories,
+    enabled: !!token && role === "admin",
+  });
 
   const createMutation = useMutation({
     mutationFn: createProductAdmin,
@@ -84,13 +78,8 @@ const ProductManagement: React.FC = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({
-      productId,
-      data,
-    }: {
-      productId: string;
-      data: Partial<Product>;
-    }) => updateProductAdmin(productId, data),
+    mutationFn: ({ productId, data }: { productId: string; data: Partial<Product> }) =>
+      updateProductAdmin(productId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -106,9 +95,23 @@ const ProductManagement: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       toast.success("Product deleted successfully!");
-      if (productsData?.products.length === 1 && page > 1) setPage(page - 1); // Go back if last item on page is deleted
+      if (productsData?.products.length === 1 && page > 1) setPage(page - 1);
     },
     onError: () => toast.error("Failed to delete product."),
+  });
+
+  const bulkUpdateMutation = useMutation({
+    mutationFn: ({ productIds, stock }: { productIds: string[]; stock: number }) =>
+      bulkUpdateProducts(productIds, stock),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setSelectedProducts([]);
+      setIsBulkModalOpen(false);
+      toast.success(data.message || "Bulk stock update successful!");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to update stock.");
+    },
   });
 
   if (!token) {
@@ -122,25 +125,15 @@ const ProductManagement: React.FC = () => {
     return null;
   }
 
-  if (productsLoading || categoriesLoading)
-    return <div className="text-center mt-10">Loading...</div>;
-  if (productsError)
-    return (
-      <div className="text-center mt-10 text-red-500">
-        Error loading products
-      </div>
-    );
+  if (productsLoading || categoriesLoading) return <div className="text-center mt-10">Loading...</div>;
+  if (productsError) return <div className="text-center mt-10 text-red-500">Error loading products</div>;
 
   const validateProduct = (product: Partial<Product>): boolean => {
     if (!product.name || product.name.trim() === "") {
       toast.error("Product name is required.");
       return false;
     }
-    if (
-      product.price === undefined ||
-      product.price <= 0 ||
-      isNaN(product.price)
-    ) {
+    if (product.price === undefined || product.price <= 0 || isNaN(product.price)) {
       toast.error("Price must be a positive number.");
       return false;
     }
@@ -148,11 +141,7 @@ const ProductManagement: React.FC = () => {
       toast.error("Image URL is required.");
       return false;
     }
-    if (
-      product.stock === undefined ||
-      product.stock < 0 ||
-      isNaN(product.stock)
-    ) {
+    if (product.stock === undefined || product.stock < 0 || isNaN(product.stock)) {
       toast.error("Stock must be a non-negative number.");
       return false;
     }
@@ -181,6 +170,24 @@ const ProductManagement: React.FC = () => {
     }
   };
 
+  const handleSelectProduct = (productId: string) => {
+    setSelectedProducts((prev) =>
+      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
+    );
+  };
+
+  const handleBulkUpdate = () => {
+    if (selectedProducts.length === 0) {
+      toast.error("Please select at least one product.");
+      return;
+    }
+    if (bulkStock < 0 || isNaN(bulkStock)) {
+      toast.error("Stock must be a non-negative number.");
+      return;
+    }
+    bulkUpdateMutation.mutate({ productIds: selectedProducts, stock: bulkStock });
+  };
+
   return (
     <div className="container mx-auto p-4 mt-16">
       <motion.h1
@@ -203,18 +210,14 @@ const ProductManagement: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             value={newProduct.name}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, name: e.target.value })
-            }
+            onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
             placeholder="Name"
             className="p-2 border rounded w-full"
           />
           <input
             type="number"
             value={newProduct.price || ""}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, price: Number(e.target.value) })
-            }
+            onChange={(e) => setNewProduct({ ...newProduct, price: Number(e.target.value) })}
             placeholder="Price"
             className="p-2 border rounded w-full"
             min="0"
@@ -222,9 +225,7 @@ const ProductManagement: React.FC = () => {
           />
           <input
             value={newProduct.image}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, image: e.target.value })
-            }
+            onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
             placeholder="Image URL"
             className="p-2 border rounded w-full"
           />
@@ -232,9 +233,7 @@ const ProductManagement: React.FC = () => {
             {!isCustomCategory ? (
               <select
                 value={newProduct.category}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, category: e.target.value })
-                }
+                onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
                 className="p-2 border rounded w-full"
               >
                 <option value="">Select Category</option>
@@ -247,9 +246,7 @@ const ProductManagement: React.FC = () => {
             ) : (
               <input
                 value={newProduct.category}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, category: e.target.value })
-                }
+                onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
                 placeholder="New Category"
                 className="p-2 border rounded w-full"
               />
@@ -264,9 +261,7 @@ const ProductManagement: React.FC = () => {
           <input
             type="number"
             value={newProduct.stock || ""}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, stock: Number(e.target.value) })
-            }
+            onChange={(e) => setNewProduct({ ...newProduct, stock: Number(e.target.value) })}
             placeholder="Stock"
             className="p-2 border rounded w-full"
             min="0"
@@ -283,11 +278,39 @@ const ProductManagement: React.FC = () => {
         </div>
       </motion.div>
 
+      {/* Bulk Action Button */}
+      {selectedProducts.length > 0 && (
+        <div className="mb-4">
+          <motion.button
+            onClick={() => setIsBulkModalOpen(true)}
+            className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Update Stock ({selectedProducts.length} selected)
+          </motion.button>
+        </div>
+      )}
+
       {/* Product List */}
       <div className="bg-white p-4 rounded-lg shadow-md">
         <table className="w-full text-left">
           <thead>
             <tr className="bg-gray-100">
+              <th className="p-2">
+                <input
+                  type="checkbox"
+                  onChange={(e) =>
+                    setSelectedProducts(
+                      e.target.checked ? productsData?.products.map((p) => p._id) || [] : []
+                    )
+                  }
+                  checked={
+                    selectedProducts.length === productsData?.products.length &&
+                    productsData?.products.length > 0
+                  }
+                />
+              </th>
               <th className="p-2">Name</th>
               <th className="p-2">Price</th>
               <th className="p-2">Category</th>
@@ -309,12 +332,16 @@ const ProductManagement: React.FC = () => {
                   <>
                     <td className="p-2">
                       <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(product._id)}
+                        onChange={() => handleSelectProduct(product._id)}
+                      />
+                    </td>
+                    <td className="p-2">
+                      <input
                         value={editingProduct.name}
                         onChange={(e) =>
-                          setEditingProduct({
-                            ...editingProduct,
-                            name: e.target.value,
-                          })
+                          setEditingProduct({ ...editingProduct, name: e.target.value })
                         }
                         className="w-full p-1 border rounded"
                       />
@@ -324,10 +351,7 @@ const ProductManagement: React.FC = () => {
                         type="number"
                         value={editingProduct.price || ""}
                         onChange={(e) =>
-                          setEditingProduct({
-                            ...editingProduct,
-                            price: Number(e.target.value),
-                          })
+                          setEditingProduct({ ...editingProduct, price: Number(e.target.value) })
                         }
                         className="w-full p-1 border rounded"
                         min="0"
@@ -338,10 +362,7 @@ const ProductManagement: React.FC = () => {
                       <select
                         value={editingProduct.category || ""}
                         onChange={(e) =>
-                          setEditingProduct({
-                            ...editingProduct,
-                            category: e.target.value,
-                          })
+                          setEditingProduct({ ...editingProduct, category: e.target.value })
                         }
                         className="w-full p-1 border rounded"
                       >
@@ -357,10 +378,7 @@ const ProductManagement: React.FC = () => {
                         <input
                           value={editingProduct.category || ""}
                           onChange={(e) =>
-                            setEditingProduct({
-                              ...editingProduct,
-                              category: e.target.value,
-                            })
+                            setEditingProduct({ ...editingProduct, category: e.target.value })
                           }
                           placeholder="New Category"
                           className="w-full p-1 border rounded mt-2"
@@ -372,19 +390,14 @@ const ProductManagement: React.FC = () => {
                         type="number"
                         value={editingProduct.stock || ""}
                         onChange={(e) =>
-                          setEditingProduct({
-                            ...editingProduct,
-                            stock: Number(e.target.value),
-                          })
+                          setEditingProduct({ ...editingProduct, stock: Number(e.target.value) })
                         }
                         className="w-full p-1 border rounded"
                         min="0"
                         step="1"
                       />
                     </td>
-                    <td className="p-2">
-                      {new Date(product.createdAt).toLocaleDateString()}
-                    </td>
+                    <td className="p-2">{new Date(product.createdAt).toLocaleDateString()}</td>
                     <td className="p-2 flex space-x-2">
                       <motion.button
                         onClick={handleSave}
@@ -406,13 +419,29 @@ const ProductManagement: React.FC = () => {
                   </>
                 ) : (
                   <>
+                    <td className="p-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(product._id)}
+                        onChange={() => handleSelectProduct(product._id)}
+                      />
+                    </td>
                     <td className="p-2">{product.name}</td>
                     <td className="p-2">₹{product.price.toLocaleString()}</td>
                     <td className="p-2">{product.category || "N/A"}</td>
-                    <td className="p-2">{product.stock}</td>
                     <td className="p-2">
-                      {new Date(product.createdAt).toLocaleDateString()}
+                      <span
+                        className={
+                          product.stock <= LOW_STOCK_THRESHOLD ? "text-red-600 font-semibold" : ""
+                        }
+                      >
+                        {product.stock}
+                      </span>
+                      {product.stock <= LOW_STOCK_THRESHOLD && (
+                        <span className="ml-2 text-xs text-red-500">(Low Stock)</span>
+                      )}
                     </td>
+                    <td className="p-2">{new Date(product.createdAt).toLocaleDateString()}</td>
                     <td className="p-2 flex space-x-2">
                       <motion.button
                         onClick={() => handleEdit(product)}
@@ -450,15 +479,10 @@ const ProductManagement: React.FC = () => {
             <FaArrowLeft /> Previous
           </motion.button>
           <span>
-            Page {productsData?.currentPage} of {productsData?.totalPages}{" "}
-            (Total: {productsData?.total})
+            Page {productsData?.currentPage} of {productsData?.totalPages} (Total: {productsData?.total})
           </span>
           <motion.button
-            onClick={() =>
-              setPage((prev) =>
-                Math.min(prev + 1, productsData?.totalPages || 1)
-              )
-            }
+            onClick={() => setPage((prev) => Math.min(prev + 1, productsData?.totalPages || 1))}
             disabled={page === productsData?.totalPages}
             className="p-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50"
             whileHover={{ scale: 1.05 }}
@@ -468,6 +492,61 @@ const ProductManagement: React.FC = () => {
           </motion.button>
         </div>
       </div>
+
+      {/* Bulk Stock Update Modal */}
+      {isBulkModalOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        >
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Bulk Stock Update</h2>
+              <button onClick={() => setIsBulkModalOpen(false)} className="text-gray-500 hover:text-gray-700">
+                <FaTimes />
+              </button>
+            </div>
+            <p className="mb-4">Selected Products: {selectedProducts.length}</p>
+            <div className="space-y-4">
+              <div>
+                <label className="block mb-2 font-medium">New Stock Level:</label>
+                <input
+                  type="number"
+                  value={bulkStock}
+                  onChange={(e) => setBulkStock(Number(e.target.value))}
+                  className="w-full p-2 border rounded"
+                  min="0"
+                  step="1"
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-4">
+              <motion.button
+                onClick={() => setIsBulkModalOpen(false)}
+                className="p-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Cancel
+              </motion.button>
+              <motion.button
+                onClick={handleBulkUpdate}
+                className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Update Stock
+              </motion.button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 };

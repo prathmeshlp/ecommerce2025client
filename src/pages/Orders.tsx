@@ -7,13 +7,15 @@ import { jwtDecode } from "jwt-decode";
 interface OrderItem {
   productId: { _id: string; name: string; price: number; image: string };
   quantity: number;
-  price: number;
+  price: number; // This is the price at order time (discounted if applicable)
 }
 
 interface Order {
   _id: string;
   items: OrderItem[];
   total: number;
+  subtotal: number; // Added to distinguish original total
+  discount?: { code: string; amount: number }; // Added to show discount info
   shippingAddress: { street: string; city: string; state: string; zip: string; country: string };
   paymentStatus: "pending" | "completed" | "failed";
   createdAt: string;
@@ -29,8 +31,7 @@ const Orders: React.FC = () => {
     enabled: !!userId,
   });
 
-  console.log(orders,"orders")
-
+  console.log("Orders data:", orders);
 
   if (isLoading) return <div className="text-center mt-10">Loading...</div>;
   if (error) return <div className="text-center mt-10 text-red-500">Error loading orders</div>;
@@ -71,14 +72,48 @@ const Orders: React.FC = () => {
               </div>
               <p className="text-gray-600">Placed on: {new Date(order.createdAt).toLocaleDateString()}</p>
               <div className="mt-4">
-                {order.items.map((item) => (
-                  <div key={item.productId._id} className="flex justify-between py-2 border-b">
-                    <span>{item.productId.name} (x{item.quantity})</span>
-                    <span>₹{(item.price * item.quantity).toLocaleString()}</span>
-                  </div>
-                ))}
+                {order.items.map((item) => {
+                  const originalPrice = item.productId.price; // Original price from product
+                  const finalPrice = item.price; // Price after discount (if any)
+                  const isDiscounted = finalPrice < originalPrice;
+
+                  return (
+                    <div key={item.productId._id} className="flex justify-between py-2 border-b">
+                      <span>{item.productId.name} (x{item.quantity})</span>
+                      <div className="flex items-center space-x-2">
+                        {isDiscounted ? (
+                          <>
+                            <span className="text-gray-400 text-sm line-through">
+                              ₹{(originalPrice * item.quantity).toLocaleString()}
+                            </span>
+                            <span className="text-green-700 font-bold">
+                              ₹{(finalPrice * item.quantity).toLocaleString()}
+                            </span>
+                          </>
+                        ) : (
+                          <span>₹{(finalPrice * item.quantity).toLocaleString()}</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <p className="text-right mt-2 font-semibold">Total: ₹{order.total.toLocaleString()}</p>
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span>₹{order.subtotal}</span>
+                </div>
+                {order.discount && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount ({order.discount.code}):</span>
+                    <span>-₹{order.discount.amount.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-lg font-semibold">
+                  <span>Total:</span>
+                  <span>₹{order.total.toLocaleString()}</span>
+                </div>
+              </div>
               <div className="mt-4">
                 <h3 className="text-lg font-semibold">Shipping Address</h3>
                 <p className="text-gray-600">

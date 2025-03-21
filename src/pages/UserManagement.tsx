@@ -6,14 +6,13 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { IUser } from "../types/types";
 
-export interface User {
-  _id: string;
-  email: string;
-  username: string;
-  role: "user" | "admin";
-  isBanned: boolean;
-  createdAt: string;
+export interface UsersData {
+currentPage:number,
+total:number,
+totalPages:number,
+users:IUser[]
 }
 
 const UserManagement: React.FC = () => {
@@ -21,18 +20,18 @@ const UserManagement: React.FC = () => {
   const role = token ? jwtDecode<{ role: string }>(token).role : "";
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingUser, setEditingUser] = useState<IUser | null>(null);
 
-  const { data: users, isLoading, error } = useQuery<User[]>({
+  const { data: usersData, isLoading, error } = useQuery<UsersData>({
     queryKey: ["users"],
     queryFn: getUsers,
     enabled: !!token && role === "admin",
   });
 
-  console.log(users,"users")
+  console.log(usersData,"users")
 
   const updateMutation = useMutation({
-    mutationFn: ({ userId, data }: { userId: string; data: Partial<User> }) => updateUser(userId, data),
+    mutationFn: ({ userId, data }: { userId: string; data: Partial<IUser> }) => updateUser(userId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success("User updated successfully!");
@@ -64,7 +63,7 @@ const UserManagement: React.FC = () => {
   if (isLoading) return <div className="text-center mt-10">Loading...</div>;
   if (error) return <div className="text-center mt-10 text-red-500">Error loading users</div>;
 
-  const handleEdit = (user: User) => {
+  const handleEdit = (user: IUser) => {
     setEditingUser(user);
   };
 
@@ -97,7 +96,7 @@ const UserManagement: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {users?.map((user) => (
+            {usersData && usersData.users?.map((user) => (
               <motion.tr
                 key={user._id}
                 initial={{ opacity: 0 }}
