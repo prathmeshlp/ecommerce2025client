@@ -1,25 +1,15 @@
-import React, { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import React from "react";
+import { PuffLoader } from "react-spinners";
+import { useAuthCallback } from "../hooks/useAuthCallback";
 
 const AuthCallback: React.FC = () => {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  useAuthCallback(); // Logic handled in hook
 
-  useEffect(() => {
-    const token = searchParams.get("token");
-    console.log(token,"token")
-    if (token) {
-      localStorage.setItem("token", token);
-      toast.success("Logged in with Google successfully!");
-      navigate("/app/home");
-    } else {
-      toast.error("Google login failed!");
-      navigate("/");
-    }
-  }, [searchParams, navigate]);
-
-  return <div>Loading...</div>;
+  return (
+    <div className="w-screen h-screen flex justify-center items-center">
+      <PuffLoader />
+    </div>
+  );
 };
 
 export default AuthCallback;

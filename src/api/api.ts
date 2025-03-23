@@ -25,7 +25,7 @@ export const getAdminDashboard = () =>
 export const getUsers = () => api.get("/admin/users").then((res) => res.data);
 
 export const updateUser = (userId: string, data: Partial<IUser>) =>
-  api.put(`/admin/users/${userId}`, data).then((res) => res.data);
+  api.put(`/users/${userId}`, data).then((res) => res.data);
 
 export const deleteUser = (userId: string) => api.delete(`/admin/users/${userId}`).then((res) => res.data);
 
@@ -35,8 +35,8 @@ export const loginUser = (credentials: { email: string; password: string }) =>
 export const registerUser = (credentials: { email: string,username:string; password: string }) =>
   api.post("/users/register", credentials).then((res) => res.data);
 
-export const getProducts = ({ page = 1, limit = 10 }: { page?: number; limit?: number } = {}) =>
-  api.get("/products", { params: { page, limit } }).then((res) => res.data);
+export const getProducts = () =>
+  api.get("/products").then((res) => res.data);
 
 // export const getCategories = () => api.get("/categories").then((res) => res.data);
 export const getUniqueCategories = () => api.get("/products/categories").then((res) => res.data);
@@ -123,5 +123,5 @@ export const deleteDiscount = (discountId: string) =>
 export const bulkUpdateDiscounts = (discountIds: string[], isActive: boolean) =>
   api.post("/admin/discounts/bulk", { discountIds, isActive }).then((res) => res.data);
 
-export const validateDiscount = (code: string, productIds: string[], subtotal: number,items: any[]) =>
+export const validateDiscount = (code: string, productIds: string[], subtotal: number,items: Product[]) =>
   api.post("/products/validate", { code, productIds, subtotal,items }).then((res) => res.data);

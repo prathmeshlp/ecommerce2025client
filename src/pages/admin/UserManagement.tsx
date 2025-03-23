@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUsers, updateUser, deleteUser } from "../api/api";
+import { getUsers, updateUser, deleteUser } from "../../api/api";
+;
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import { IUser } from "../types/types";
+import { PuffLoader } from "react-spinners";
+import { IUser } from "../../types/types";
 
 export interface UsersData {
 currentPage:number,
@@ -60,7 +62,7 @@ const UserManagement: React.FC = () => {
     return null;
   }
 
-  if (isLoading) return <div className="text-center mt-10">Loading...</div>;
+  if (isLoading) return <div className="w-screen h-screen flex justify-center items-center"><PuffLoader /></div>;
   if (error) return <div className="text-center mt-10 text-red-500">Error loading users</div>;
 
   const handleEdit = (user: IUser) => {

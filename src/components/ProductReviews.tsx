@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import useCustomFormik from "../hooks/useCustomFormik";
 import * as Yup from "yup";
 import { jwtDecode } from "jwt-decode";
+import { PuffLoader } from "react-spinners";
 
 interface Review {
   _id: string;
@@ -47,7 +48,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
     },
   });
 
-  if (isLoading) return <p>Loading reviews...</p>;
+  if (isLoading) return <div className="flex justify-center items-center"><PuffLoader /></div>;
 
   return (
     <div className="reviewContainer w-full flex flex-col justify-center items-center ">

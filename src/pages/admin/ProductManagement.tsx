@@ -1,18 +1,12 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  createProductAdmin,
-  updateProductAdmin,
-  deleteProductAdmin,
-  getUniqueCategories,
-  getProductsAdmin,
-  bulkUpdateProducts,
-} from "../api/api";
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash, FaPlus, FaArrowLeft, FaArrowRight, FaTimes } from "react-icons/fa";
+import { PuffLoader } from "react-spinners";
+import { getProductsAdmin, getUniqueCategories, createProductAdmin, updateProductAdmin, deleteProductAdmin, bulkUpdateProducts } from "../../api/api";
 
 interface Product {
   _id: string;
@@ -109,6 +103,7 @@ const ProductManagement: React.FC = () => {
       setIsBulkModalOpen(false);
       toast.success(data.message || "Bulk stock update successful!");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to update stock.");
     },
@@ -125,8 +120,8 @@ const ProductManagement: React.FC = () => {
     return null;
   }
 
-  if (productsLoading || categoriesLoading) return <div className="text-center mt-10">Loading...</div>;
-  if (productsError) return <div className="text-center mt-10 text-red-500">Error loading products</div>;
+  if (productsLoading || categoriesLoading) return <div className="w-screen h-screen flex justify-center items-center"><PuffLoader /></div>;
+  if (productsError) return <div className="w-screen h-screen flex justify-center items-center text-center mt-10 text-red-500">Error loading products</div>;
 
   const validateProduct = (product: Partial<Product>): boolean => {
     if (!product.name || product.name.trim() === "") {

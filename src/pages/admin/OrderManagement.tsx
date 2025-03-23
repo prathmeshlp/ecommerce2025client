@@ -5,10 +5,10 @@ import {
   updateOrder,
   deleteOrder,
   bulkUpdateOrders,
-} from "../api/api";
+} from "../../api/api";
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import {
   FaEdit,
@@ -18,7 +18,8 @@ import {
   FaTimes,
   FaEye,
 } from "react-icons/fa";
-import useDebounce from "../hooks/useDebounce";
+import useDebounce from "../../hooks/useDebounce";
+import { PuffLoader } from "react-spinners";
 
 interface OrderItem {
   productId: { _id: string; name: string; price: number; image: string } | null;
@@ -125,6 +126,7 @@ const OrderManagement: React.FC = () => {
       setIsBulkModalOpen(false);
       toast.success(data.message || "Bulk action completed successfully!");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const errorMessage =
         error.response?.data?.message || "Failed to perform bulk action.";
@@ -143,10 +145,10 @@ const OrderManagement: React.FC = () => {
     return null;
   }
 
-  if (isLoading) return <div className="text-center mt-10">Loading...</div>;
+  if (isLoading) return <div className="w-screen h-screen flex justify-center items-center"><PuffLoader /></div>;
   if (error)
     return (
-      <div className="text-center mt-10 text-red-500">Error loading orders</div>
+      <div className="w-screen h-screen flex justify-center items-center text-red-500">Error loading orders</div>
     );
 
   const handleEdit = (order: Order) => {

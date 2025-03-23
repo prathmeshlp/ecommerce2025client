@@ -19,11 +19,12 @@ import Profile from "./pages/Profile";
 import "./index.css";
 import AuthCallback from "./pages/AuthCallback";
 import Checkout from "./pages/Checkout";
-import AdminDashboard from "./pages/AdminDashboard";
-import UserManagement from "./pages/UserManagement";
-import ProductManagement from "./pages/ProductManagement";
-import OrderManagement from "./pages/OrderManagement";
-import DiscountManagement from "./pages/DiscountManagement";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import UserManagement from "./pages/admin/UserManagement";
+import ProductManagement from "./pages/admin/ProductManagement";
+import OrderManagement from "./pages/admin/OrderManagement";
+import DiscountManagement from "./pages/admin/DiscountManagement";
+import ProductDescriptionPage from "./pages/ProductDescriptionPage";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Orders />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "product/:id",
+        element: (
+          <PrivateRoute>
+            <ProductDescriptionPage />
           </PrivateRoute>
         ),
       },
