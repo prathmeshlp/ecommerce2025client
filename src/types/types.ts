@@ -243,12 +243,55 @@ export interface Order {
   }
   
   export interface ProductsResponse {
-    products: { _id: string; name: string }[];
+    products: Product[];
     total: number;
     currentPage: number;
     totalPages: number;
   }
 
+
+  export interface Order {
+    _id: string;
+    userId: { _id: string; email: string };
+    items: OrderItem[];
+    total: number;
+    shippingAddress: {
+      street: string;
+      city: string;
+      state: string;
+      zip: string;
+      country: string;
+    };
+    paymentStatus: "pending" | "completed" | "failed";
+    razorpayOrderId?: string;
+    paymentId?: string;
+    createdAt: string;
+  }
+  
+  export interface OrdersResponse {
+    orders: Order[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }
+
+  export interface IUser {
+    _id: string;
+    email: string;
+    username: string;
+    role: "user" | "admin";
+    isBanned: boolean;
+    address?: IAddress;
+    createdAt: string;
+    updatedAt: string;
+  }
+  
+  export interface UsersData {
+    currentPage: number;
+    total: number;
+    totalPages: number;
+    users: IUser[];
+  }
   // //create Order
   // export interface ShippingAddress {
   //   street: string;
