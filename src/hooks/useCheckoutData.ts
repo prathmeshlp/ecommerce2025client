@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { useMutation } from "@tanstack/react-query";
-import { createOrder, verifyPayment } from "../api/api";
+import { createOrder, verifyPayment } from "../api/orderApi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { clearCart } from "../redux/cartSlice";
 import { toast } from "react-hot-toast";

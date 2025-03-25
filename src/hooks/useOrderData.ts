@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUserOrders } from "../api/api";
+import { getUserOrders } from "../api/orderApi";
 import { jwtDecode } from "jwt-decode";
 import { Order } from "../types/types";
 

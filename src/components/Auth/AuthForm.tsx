@@ -1,7 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
-import { AUTH_MESSAGES } from "../constants/authConstants";
+import { AUTH_MESSAGES } from "../../constants/authConstants";
 
 interface AuthFormProps {
   isLogin: boolean;

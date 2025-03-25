@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useProfileData } from "../hooks/useProfileData";
-import { ProfileForm } from "../components/ProfileForm";
+import { ProfileForm } from "../components/Profile/ProfileForm";
 import { PuffLoader } from "react-spinners";
 import { PROFILE_MESSAGES } from "../constants/profileConstants";
 

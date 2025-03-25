@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useUserManagementData } from "../../hooks/useUserManagementData";
-import { UserTable } from "../../components/UserTable";
+import { UserTable } from "../../components/UserManagement/UserTable";
 import { PuffLoader } from "react-spinners";
 import { USER_MESSAGES } from "../../constants/userManagementConstants";
 

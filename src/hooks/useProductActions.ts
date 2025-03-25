@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { addToCart } from "../redux/cartSlice";
-import { toast } from "react-toastify"; // Switched to react-hot-toast
+import { toast } from "react-toastify"; 
 import { ProductData } from "../types/types";
 import { PRODUCT_MESSAGES } from "../constants/productConstants";
 

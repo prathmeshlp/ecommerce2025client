@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
-import useCustomFormik from "../hooks/useCustomFormik";
+import useCustomFormik from "../../hooks/useCustomFormik";
 import * as Yup from "yup";
-import { User } from "../types/types";
-import { PROFILE_MESSAGES } from "../constants/profileConstants";
+import { User } from "../../types/types";
+import { PROFILE_MESSAGES } from "../../constants/profileConstants";
 
 interface ProfileFormProps {
   user: User | undefined;

@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { DashboardData } from "../types/types";
-import { DASHBOARD_MESSAGES } from "../constants/dashboardConstants";
+import { DashboardData } from "../../types/types";
+import { DASHBOARD_MESSAGES } from "../../constants/dashboardConstants";
 
 interface SummaryCardsProps {
   data: DashboardData | null;

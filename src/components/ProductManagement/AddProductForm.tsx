@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaPlus } from "react-icons/fa";
-import { PRODUCT_MESSAGES, PRODUCT_BUTTONS } from "../constants/productManagementConstants";
+import { PRODUCT_MESSAGES, PRODUCT_BUTTONS } from "../../constants/productManagementConstants";
 
 interface AddProductFormProps {
   newProduct: {

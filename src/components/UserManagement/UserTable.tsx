@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import { IUser, UsersData } from "../types/types";
-import { USER_BUTTONS } from "../constants/userManagementConstants";
+import { IUser, UsersData } from "../../types/types";
+import { USER_BUTTONS } from "../../constants/userManagementConstants";
 
 interface UserTableProps {
   usersData: UsersData | undefined;

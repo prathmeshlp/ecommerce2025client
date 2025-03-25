@@ -1,5 +1,5 @@
 import React from "react";
-import ProductReviews from "./ProductReviews";
+import ProductReviews from "../ProductReviews";
 
 interface ProductReviewsSectionProps {
   productId: string;

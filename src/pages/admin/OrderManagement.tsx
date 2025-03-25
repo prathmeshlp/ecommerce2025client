@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useOrderManagementData } from "../../hooks/useOrderManagementData";
-import { FilterSearchSection } from "../../components/FilterSearchSection";
-import { BulkActionsModal } from "../../components/BulkActionsModal";
-import { OrderTable } from "../../components/OrderTable";
+import { FilterSearchSection } from "../../components/OrderManagement/FilterSearchSection";
+import { BulkActionsModal } from "../../components/OrderManagement/BulkActionsModal";
+import { OrderTable } from "../../components/OrderManagement/OrderTable";
 import { PuffLoader } from "react-spinners";
 import { ORDER_MESSAGES, ORDER_BUTTONS } from "../../constants/orderManagementConstants";
 

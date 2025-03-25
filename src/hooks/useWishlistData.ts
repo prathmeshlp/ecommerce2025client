@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getWishlist, removeFromWishlist } from "../api/api";
+import { getWishlist, removeFromWishlist } from "../api/wishlistApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast"; // Switched to react-hot-toast
 import { WishlistItem } from "../types/types";

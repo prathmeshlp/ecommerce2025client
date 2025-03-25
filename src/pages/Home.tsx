@@ -3,23 +3,15 @@ import { motion } from "framer-motion";
 import { PuffLoader } from "react-spinners";
 import { useProductData } from "../hooks/useProductData";
 import { useProductFilters } from "../hooks/useProductFilters";
-import { ProductCarousel } from "../components/ProductCarousel";
-import { ProductList } from "../components/ProductList";
-import FilterSidebar from "../components/FilterSidebar";
+import { ProductCarousel } from "../components/Home/ProductCarousel";
+import { ProductList } from "../components/Home/ProductList";
+import FilterSidebar from "../components/Home/FilterSidebar";
 import { CAROUSEL_ITEMS } from "../constants/carousalConstants";
-
-
 
 const Home: React.FC = () => {
   const { categories, products, isLoading, error } = useProductData();
-  const {
-    filters,
-    setFilters,
-    page,
-    setPage,
-    paginatedProducts,
-    totalPages,
-  } = useProductFilters(products);
+  const { filters, setFilters, page, setPage, paginatedProducts, totalPages } =
+    useProductFilters(products);
 
   if (isLoading)
     return (
@@ -47,11 +39,17 @@ const Home: React.FC = () => {
         <FilterSidebar
           categories={categories}
           selectedCategory={filters.selectedCategory}
-          setSelectedCategory={(value) => setFilters({ ...filters, selectedCategory: value })}
+          setSelectedCategory={(value) =>
+            setFilters({ ...filters, selectedCategory: value })
+          }
           priceFilter={filters.priceFilter}
-          setPriceFilter={(value) => setFilters({ ...filters, priceFilter: value })}
+          setPriceFilter={(value) =>
+            setFilters({ ...filters, priceFilter: value })
+          }
           ratingFilter={filters.ratingFilter}
-          setRatingFilter={(value) => setFilters({ ...filters, ratingFilter: value })}
+          setRatingFilter={(value) =>
+            setFilters({ ...filters, ratingFilter: value })
+          }
         />
         <ProductList
           products={paginatedProducts}

@@ -18,10 +18,11 @@ import { motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
 import { toast } from "react-toastify"; // Switched to react-hot-toast for consistency
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getWishlist, logoutUser } from "../api/api";
+import { logoutUser } from "../api/userApi";
 import { jwtDecode } from "jwt-decode";
 import { WishlistItem } from "./Product";
 import { PuffLoader } from "react-spinners";
+import { getWishlist } from "../api/wishlistApi";
 
 const Navbar: React.FC = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items);

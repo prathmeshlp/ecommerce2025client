@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useWishlistData } from "../hooks/useWishlistData";
-import { WishlistItems } from "../components/WishlistItems";
+import { WishlistItems } from "../components/Wishlist/WishlistItems";
 import { PuffLoader } from "react-spinners";
 import { WISHLIST_MESSAGES } from "../constants/wishlistConstants";
 

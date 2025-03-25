@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useProductManagementData } from "../../hooks/useProductManagementData";
-import { AddProductForm } from "../../components/AddProductForm";
-import { BulkStockUpdateModal } from "../../components/BulkStockUpdateModal";
-import { ProductTable } from "../../components/ProductTable";
+import { AddProductForm } from "../../components/ProductManagement/AddProductForm";
+import { BulkStockUpdateModal } from "../../components/ProductManagement/BulkStockUpdateModal";
+import { ProductTable } from "../../components/ProductManagement/ProductTable";
 import { PuffLoader } from "react-spinners";
 import { PRODUCT_MESSAGES, PRODUCT_BUTTONS } from "../../constants/productManagementConstants";
 

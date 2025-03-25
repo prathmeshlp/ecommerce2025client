@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUsers, updateUser, deleteUser } from "../api/api";
+import { updateUser } from "../api/userApi";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { IUser, UsersData } from "../types/types";
 import { USER_MESSAGES } from "../constants/userManagementConstants";
+import { deleteUserAdmin, getUsersAdmin } from "../api/adminApi";
 
 export const useUserManagementData = () => {
   const token = localStorage.getItem("token");
@@ -16,7 +17,7 @@ export const useUserManagementData = () => {
 
   const { data: usersData, isLoading, error } = useQuery<UsersData>({
     queryKey: ["users"],
-    queryFn: getUsers,
+    queryFn: () => getUsersAdmin(),
     enabled: !!token && role === "admin",
   });
 
@@ -31,7 +32,7 @@ export const useUserManagementData = () => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteUser,
+    mutationFn: deleteUserAdmin,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success(USER_MESSAGES.DELETE_SUCCESS);
@@ -72,3 +73,5 @@ export const useUserManagementData = () => {
     deleteMutation,
   };
 };
+
+

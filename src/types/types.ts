@@ -292,18 +292,18 @@ export interface Order {
     totalPages: number;
     users: IUser[];
   }
-  // //create Order
-  // export interface ShippingAddress {
-  //   street: string;
-  //   city: string;
-  //   state: string;
-  //   zip: string;
-  //   country: string;
-  // }
+  //create Order
+  export interface ShippingAddress {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    country: string;
+  }
   
-  // export interface OrderRequest {
-  //   items: CartItem[];
-  //   shippingAddress: ShippingAddress;
-  //   discountCode?: string ; // Optional, based on your discount integration
-  // }
+  export interface OrderRequest {
+    items: CartItem[];
+    shippingAddress: ShippingAddress;
+    discountCode?: string ; // Optional, based on your discount integration
+  }
   

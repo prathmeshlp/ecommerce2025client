@@ -8,7 +8,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { router } from "./routes/router";
 import { PuffLoader } from "react-spinners";
-import "./index.css";
 
 const queryClient = new QueryClient();
 

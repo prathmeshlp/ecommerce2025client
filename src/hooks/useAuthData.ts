@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { loginUser, registerUser } from "../api/api";
+import { loginUser, registerUser } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast"; // Switched to react-hot-toast
 import { AuthFormData, AuthResponse } from "../types/types";

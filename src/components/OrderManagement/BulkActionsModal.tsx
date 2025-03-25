@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
-import { ORDER_BUTTONS } from "../constants/orderManagementConstants";
+import { ORDER_BUTTONS } from "../../constants/orderManagementConstants";
 
 interface BulkActionsModalProps {
   isOpen: boolean;

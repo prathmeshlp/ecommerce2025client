@@ -1,11 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useAdminDashboardData } from "../../hooks/useAdminDashboardData";
-import { SummaryCards } from "../../components/SummaryCards";
-import { RevenueTrendChart } from "../../components/RevenueTrendChart";
-import { UserGrowthChart } from "../../components/UserGrowthChart";
-import { TopProductsChart } from "../../components/TopProductsChart";
-import { RecentOrders } from "../../components/RecentOrders";
+import { SummaryCards } from "../../components/AdminDashboard/SummaryCards";
+import { RevenueTrendChart } from "../../components/AdminDashboard/RevenueTrendChart";
+import { UserGrowthChart } from "../../components/AdminDashboard/UserGrowthChart";
+import { TopProductsChart } from "../../components/AdminDashboard/TopProductsChart";
+import { RecentOrders } from "../../components/AdminDashboard/RecentOrders";
 import { Link } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
 import { DASHBOARD_MESSAGES } from "../../constants/dashboardConstants";

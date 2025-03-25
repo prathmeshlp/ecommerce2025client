@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { WishlistItem } from "../types/types";
-import { WishlistCard } from "./WishlistCard";
-import { WISHLIST_MESSAGES } from "../constants/wishlistConstants";
+import { WishlistItem } from "../../types/types";
+import { WishlistCard } from "../WishlistCard";
+import { WISHLIST_MESSAGES } from "../../constants/wishlistConstants";
 
 interface WishlistItemsProps {
   items: WishlistItem[];

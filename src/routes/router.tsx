@@ -3,7 +3,7 @@ import { lazy } from "react";
 import PrivateRoute from "../components/PrivateRoute";
 
 // Lazy-loaded components
-const Login = lazy(() => import("../pages/AuthPage"));
+const Login = lazy(() => import("../pages/Auth"));
 const Error = lazy(() => import("../pages/Error"));
 const Root = lazy(() => import("../pages/Root"));
 const Home = lazy(() => import("../pages/Home"));

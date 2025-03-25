@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ProductData } from "../types/types";
-import { PRODUCT_MESSAGES } from "../constants/productConstants";
+import { ProductData } from "../../types/types";
+import { PRODUCT_MESSAGES } from "../../constants/productConstants";
 
 interface ProductDetailsProps {
   product: ProductData;

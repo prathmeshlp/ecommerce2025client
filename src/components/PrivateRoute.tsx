@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { getToken } from '../api/auth';
+import { getToken } from '../utils/auth';
 
 interface PrivateRouteProps {
   children: ReactNode;

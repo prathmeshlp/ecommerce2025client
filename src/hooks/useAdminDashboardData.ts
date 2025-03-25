@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAdminDashboard } from "../api/api";
+import { getAdminDashboard } from "../api/adminApi";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { getToken } from "../api/auth";
+import { getToken } from "../utils/auth";
 import { DashboardData } from "../types/types";
 import { DASHBOARD_MESSAGES } from "../constants/dashboardConstants";
 

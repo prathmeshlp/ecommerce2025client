@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useCartData } from "../hooks/useCartData";
-import { CartItemsList } from "../components/CartItemsList";
-import { OrderSummary } from "../components/OrderSummary";
+import { CartItemsList } from "../components/Cart/CartItemsList";
+import { OrderSummary } from "../components/Cart/OrderSummary";
 import { CART_MESSAGES } from "../constants/cartConstants";
 
 const Cart: React.FC = () => {

@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useDiscountManagementData } from "../../hooks/useDiscountManagementData";
-import { AddDiscountForm } from "../../components/AddDiscountForm";
-import { BulkActions } from "../../components/BulkActions";
-import { DiscountTable } from "../../components/DiscountTable";
+import { AddDiscountForm } from "../../components/DiscountManagement/AddDiscountForm";
+import { BulkActions } from "../../components/DiscountManagement/BulkActions";
+import { DiscountTable } from "../../components/DiscountManagement/DiscountTable";
 import { PuffLoader } from "react-spinners";
 import { DISCOUNT_MESSAGES } from "../../constants/discountConstants";
 

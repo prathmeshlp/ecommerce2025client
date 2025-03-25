@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { removeFromCart, updateQuantity } from "../redux/cartSlice";
 import { useMutation } from "@tanstack/react-query";
-import { validateDiscount } from "../api/api";
+import { validateDiscount } from "../api/productApi";
 import { toast } from "react-hot-toast"; // Switched to react-hot-toast for consistency
 import { CartItem, AppliedDiscount, DiscountResponse } from "../types/types";
 import { CART_MESSAGES } from "../constants/cartConstants";

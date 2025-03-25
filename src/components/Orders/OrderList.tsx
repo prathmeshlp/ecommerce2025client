@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Order } from "../types/types";
-import { OrderCard } from "./OrderCard";
-import { ORDER_MESSAGES } from "../constants/orderConstants";
+import { Order } from "../../types/types";
+import { OrderCard } from "../OrderCard";
+import { ORDER_MESSAGES } from "../../constants/orderConstants";
 
 interface OrderListProps {
   orders: Order[];

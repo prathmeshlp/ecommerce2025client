@@ -1,11 +1,12 @@
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getReviews, addReview } from "../api/api";
+// import { getReviews, addReview } from "../api/api";
 import { motion } from "framer-motion";
 import useCustomFormik from "../hooks/useCustomFormik";
 import * as Yup from "yup";
 import { jwtDecode } from "jwt-decode";
 import { PuffLoader } from "react-spinners";
+import { addReview, getReviews } from "../api/productApi";
 
 interface Review {
   _id: string;

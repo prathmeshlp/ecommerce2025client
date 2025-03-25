@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { CartItem, AppliedDiscount } from "../types/types";
-import { CART_MESSAGES } from "../constants/cartConstants";
+import { CartItem, AppliedDiscount } from "../../types/types";
+import { CART_MESSAGES } from "../../constants/cartConstants";
 
 interface OrderSummaryProps {
   subtotal: number;

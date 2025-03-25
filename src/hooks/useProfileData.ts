@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUser, updateUser } from "../api/api";
+import { getUser, updateUser } from "../api/userApi";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast"; // Switched to react-hot-toast

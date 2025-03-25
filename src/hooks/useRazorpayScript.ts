@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast"; // Switched to react-hot-toast
+import { toast } from "react-toastify"; 
 import { CHECKOUT_MESSAGES } from "../constants/checkoutConstants";
 
 

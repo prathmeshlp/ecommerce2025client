@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useOrderData } from "../hooks/useOrderData";
-import { OrderList } from "../components/OrderList";
+import { OrderList } from "../components/Orders/OrderList";
 import { PuffLoader } from "react-spinners";
 import { ORDER_MESSAGES } from "../constants/orderConstants";
 

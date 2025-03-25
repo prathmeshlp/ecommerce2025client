@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProductsAdmin, getUniqueCategories, createProductAdmin, updateProductAdmin, deleteProductAdmin, bulkUpdateProducts } from "../api/api";
+import { getProductsAdmin, createProductAdmin, updateProductAdmin, deleteProductAdmin, bulkUpdateProducts } from "../api/adminApi";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Product, ProductsResponse } from "../types/types";
 import { PRODUCT_MESSAGES } from "../constants/productManagementConstants";
+import { getUniqueCategories } from "../api/productApi";
 
 export const useProductManagementData = () => {
   const token = localStorage.getItem("token");

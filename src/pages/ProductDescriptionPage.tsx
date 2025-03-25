@@ -1,10 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useProductActions } from "../hooks/useProductActions";
-import { ProductImage } from "../components/ProductImage";
-import { ProductDetails } from "../components/ProductDetails";
-import { ProductDescription } from "../components/ProductDescription";
-import { ProductReviewsSection } from "../components/ProductReviewsSection";
+import { ProductImage } from "../components/ProductDescription/ProductImage";
+import { ProductDetails } from "../components/ProductDescription/ProductDetails";
+import { ProductDescription } from "../components/ProductDescription/ProductDescription";
+import { ProductReviewsSection } from "../components/ProductDescription/ProductReviewsSection";
 import { PRODUCT_MESSAGES } from "../constants/productConstants";
 
 const ProductDescriptionPage: React.FC = () => {

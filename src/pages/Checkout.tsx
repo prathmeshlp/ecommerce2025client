@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useCheckoutData } from "../hooks/useCheckoutData";
-import { OrderSummaryNew } from "../components/OrderSummaryNew";
-import { ShippingForm } from "../components/ShippingForm";
+import { OrderSummaryNew } from "../components/Checkout/OrderSummaryNew";
+import { ShippingForm } from "../components/Checkout/ShippingForm";
 import { CHECKOUT_MESSAGES } from "../constants/checkoutConstants";
 
 const Checkout: React.FC = () => {

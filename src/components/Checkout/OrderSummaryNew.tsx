@@ -1,5 +1,5 @@
 import React from "react";
-import { CartItem, AppliedDiscount } from "../types/types";
+import { CartItem, AppliedDiscount } from "../../types/types";
 
 interface OrderSummaryProps {
   items: CartItem[];

@@ -140,7 +140,9 @@ export const AddDiscountForm: React.FC<AddDiscountFormProps> = ({
               ...newDiscount,
               applicableProducts: Array.from(e.target.selectedOptions, (option) => {
                 const product = productsData?.products.find((p) => p._id === option.value);
-                return product ? product : { _id: option.value, name: "" };
+                return product && product._id
+                  ? { _id: product._id, name: product.name }
+                  : { _id: option.value, name: "" };
               }),
             })
           }

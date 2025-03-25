@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaEdit, FaTrash, FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { Product, ProductsResponse } from "../types/types";
-import { PRODUCT_BUTTONS, LOW_STOCK_THRESHOLD } from "../constants/productManagementConstants";
+import { Product, ProductsResponse } from "../../types/types";
+import { PRODUCT_BUTTONS, LOW_STOCK_THRESHOLD } from "../../constants/productManagementConstants";
 
 interface ProductTableProps {
   productsData: ProductsResponse | undefined;

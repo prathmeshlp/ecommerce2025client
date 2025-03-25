@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useAuthData } from "../hooks/useAuthData";
-import { AuthForm } from "../components/AuthForm";
+import { AuthForm } from "../components/Auth/AuthForm";
 
 const AuthPage: React.FC = () => {
   const {

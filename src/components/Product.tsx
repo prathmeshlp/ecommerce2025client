@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addToWishlist, getWishlist } from "../api/api";
+import { addToWishlist, getWishlist } from "../api/wishlistApi";
 import { toast } from "react-toastify";
 import { FaHeart } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";

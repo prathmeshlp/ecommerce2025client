@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProducts, getUniqueCategories } from "../api/api";
+import { getProducts, getUniqueCategories } from "../api/productApi";
 import { PaginatedResponse } from "../types/types";
-import { getToken } from "../api/auth";
+import { getToken } from "../utils/auth";
 
 export const useProductData = () => {
   const token = getToken();

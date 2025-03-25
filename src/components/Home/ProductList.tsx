@@ -1,6 +1,6 @@
 import React from "react";
-import { ProductData } from "../types/types";
-import Product from "./Product";
+import { ProductData } from "../../types/types";
+import Product from "../Product";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 

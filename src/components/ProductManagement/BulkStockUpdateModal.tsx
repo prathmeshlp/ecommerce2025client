@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
-import { PRODUCT_BUTTONS } from "../constants/productManagementConstants";
+import { PRODUCT_BUTTONS } from "../../constants/productManagementConstants";
 
 interface BulkStockUpdateModalProps {
   isOpen: boolean;
