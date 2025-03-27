@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { DISCOUNT_BUTTONS } from "../constants/discountConstants";
+import { DISCOUNT_BUTTONS } from "../../constants/discountConstants";
 
 interface BulkActionsProps {
   selectedDiscounts: string[];

@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
-import { DashboardData } from "../types/types";
-import { DASHBOARD_MESSAGES, COLORS } from "../constants/dashboardConstants";
+import { DashboardData } from "../../types/types";
+import { DASHBOARD_MESSAGES, COLORS } from "../../constants/dashboardConstants";
 
 interface TopProductsChartProps {
   data: DashboardData["topProducts"];

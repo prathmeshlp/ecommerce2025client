@@ -38,7 +38,7 @@ const DiscountManagement: React.FC = () => {
     deleteMutation,
   } = useDiscountManagementData();
 
-  if (!token || role !== "admin") return null; // Navigation handled in hook
+  if (!token || role !== "admin") return null; 
 
   if (isLoading) {
     return (

@@ -1,11 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaEdit, FaTrash, FaChevronDown, FaChevronUp, FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { IDiscount, DiscountsResponse } from "../types/types";
-import { DISCOUNT_MESSAGES, DISCOUNT_BUTTONS } from "../constants/discountConstants";
+import { IDiscount, DiscountsResponse, ApiResponse } from "../../types/types";
+import { DISCOUNT_BUTTONS, DISCOUNT_MESSAGES } from "../../constants/discountConstants";
 
 interface DiscountTableProps {
-  discountsData: DiscountsResponse | undefined;
+  discountsData: ApiResponse<DiscountsResponse> | undefined;
   editingDiscount: IDiscount | null;
   setEditingDiscount: (discount: IDiscount | null) => void;
   expandedRows: string[];
@@ -42,12 +42,12 @@ export const DiscountTable: React.FC<DiscountTableProps> = ({
               type="checkbox"
               onChange={(e) =>
                 handleSelectDiscount(
-                  e.target.checked ? discountsData?.discounts.map((d) => d._id) || [] : []
+                  e.target.checked ? discountsData?.data?.discounts.map((d) => d._id) || [] : []
                 )
               }
               checked={
-                selectedDiscounts.length === discountsData?.discounts.length &&
-                discountsData?.discounts.length > 0
+                selectedDiscounts.length === discountsData?.data?.discounts.length &&
+                discountsData?.data?.discounts.length > 0
               }
               aria-label="Select all discounts"
             />
@@ -62,7 +62,7 @@ export const DiscountTable: React.FC<DiscountTableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {discountsData?.discounts.map((discount) => (
+        {discountsData?.data?.discounts.map((discount) => (
           <React.Fragment key={discount._id}>
             <motion.tr
               initial={{ opacity: 0 }}
@@ -267,12 +267,12 @@ export const DiscountTable: React.FC<DiscountTableProps> = ({
       >
         <FaArrowLeft /> {DISCOUNT_BUTTONS.PREV}
       </motion.button>
-      <span aria-label={`Discounts page ${discountsData?.currentPage} of ${discountsData?.totalPages}`}>
-        Page {discountsData?.currentPage} of {discountsData?.totalPages} (Total: {discountsData?.total})
+      <span aria-label={`Discounts page ${discountsData?.data?.currentPage} of ${discountsData?.data?.totalPages}`}>
+        Page {discountsData?.data?.currentPage} of {discountsData?.data?.totalPages} (Total: {discountsData?.data?.total})
       </span>
       <motion.button
-        onClick={() => setPage(Math.min(page + 1, discountsData?.totalPages || 1))}
-        disabled={page === discountsData?.totalPages}
+        onClick={() => setPage(Math.min(page + 1, discountsData?.data?.totalPages || 1))}
+        disabled={page === discountsData?.data?.totalPages}
         className="p-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}

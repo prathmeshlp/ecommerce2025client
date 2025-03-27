@@ -22,7 +22,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 }) => {
 
 
-console.log(categories)
+// console.log(categories)
   return (
     <div className="w-64 p-4 bg-gray-100 rounded-lg shadow-md h-full">
       <h2 className="text-xl font-bold mb-4">Filters</h2>

@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getWishlist, removeFromWishlist } from "../api/wishlistApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast"; // Switched to react-hot-toast
-import { WishlistItem } from "../types/types";
+import { ApiResponse, WishlistItem } from "../types/types";
 import { WISHLIST_MESSAGES } from "../constants/wishlistConstants";
 
 export const useWishlistData = () => {
@@ -18,11 +18,13 @@ export const useWishlistData = () => {
     navigate("/");
   }
 
-  const { data: wishlist, isLoading, error } = useQuery<WishlistItem[]>({
+  const { data: wishlist, isLoading, error } = useQuery<ApiResponse<WishlistItem[]>>({
     queryKey: ["wishlist", userId],
     queryFn: () => getWishlist(userId!),
     enabled: !!userId,
   });
+
+  console.log(wishlist)
 
   const removeMutation = useMutation({
     mutationFn: ({ userId, productId }: { userId: string; productId: string }) =>
@@ -48,7 +50,7 @@ export const useWishlistData = () => {
 
   return {
     userId,
-    wishlist: wishlist || [],
+    wishlist: wishlist?.data || [],
     isLoading,
     error,
     removeMutation,

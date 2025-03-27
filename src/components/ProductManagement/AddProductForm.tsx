@@ -1,7 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaPlus } from "react-icons/fa";
-import { PRODUCT_MESSAGES, PRODUCT_BUTTONS } from "../../constants/productManagementConstants";
+import {
+  PRODUCT_MESSAGES,
+  PRODUCT_BUTTONS,
+} from "../../constants/productManagementConstants";
+import { Categories } from "../../types/types";
 
 interface AddProductFormProps {
   newProduct: {
@@ -20,7 +24,7 @@ interface AddProductFormProps {
   }) => void;
   isCustomCategory: boolean;
   setIsCustomCategory: (value: boolean) => void;
-  categories: string[] | undefined;
+  categories: Categories | undefined;
   onAddProduct: () => void;
 }
 
@@ -50,7 +54,9 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
       <input
         type="number"
         value={newProduct.price || ""}
-        onChange={(e) => setNewProduct({ ...newProduct, price: Number(e.target.value) })}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, price: Number(e.target.value) })
+        }
         placeholder="Price"
         className="p-2 border rounded w-full"
         min="0"
@@ -59,7 +65,9 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
       />
       <input
         value={newProduct.image}
-        onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, image: e.target.value })
+        }
         placeholder="Image URL"
         className="p-2 border rounded w-full"
         aria-label="Product image URL"
@@ -68,21 +76,27 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
         {!isCustomCategory ? (
           <select
             value={newProduct.category}
-            onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, category: e.target.value })
+            }
             className="p-2 border rounded w-full"
             aria-label="Select category"
           >
             <option value="">Select Category</option>
-            {categories?.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
+            {Array.isArray(categories)
+              ? categories?.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))
+              : null}
           </select>
         ) : (
           <input
             value={newProduct.category}
-            onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, category: e.target.value })
+            }
             placeholder="New Category"
             className="p-2 border rounded w-full"
             aria-label="Custom category"
@@ -91,7 +105,9 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
         <button
           onClick={() => setIsCustomCategory(!isCustomCategory)}
           className="p-2 bg-gray-200 rounded hover:bg-gray-300"
-          aria-label={isCustomCategory ? "Use existing category" : "Add new category"}
+          aria-label={
+            isCustomCategory ? "Use existing category" : "Add new category"
+          }
         >
           {isCustomCategory ? "Select" : PRODUCT_BUTTONS.TOGGLE_CATEGORY}
         </button>
@@ -99,7 +115,9 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
       <input
         type="number"
         value={newProduct.stock || ""}
-        onChange={(e) => setNewProduct({ ...newProduct, stock: Number(e.target.value) })}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, stock: Number(e.target.value) })
+        }
         placeholder="Stock"
         className="p-2 border rounded w-full"
         min="0"

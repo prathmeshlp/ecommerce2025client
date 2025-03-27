@@ -1,16 +1,16 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaEdit, FaTrash, FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { Product, ProductsResponse } from "../../types/types";
+import { ApiResponse, Categories, Product, ProductsResponse } from "../../types/types";
 import { PRODUCT_BUTTONS, LOW_STOCK_THRESHOLD } from "../../constants/productManagementConstants";
 
 interface ProductTableProps {
-  productsData: ProductsResponse | undefined;
+  productsData: ApiResponse<ProductsResponse>;
   editingProduct: Product | null;
   setEditingProduct: (product: Product | null) => void;
   selectedProducts: string[];
   handleSelectProduct: (productId: string | string[]) => void;
-  categories: string[] | undefined;
+  categories: Categories | undefined;
   onEdit: (product: Product) => void;
   onSave: () => void;
   onDelete: (productId: string) => void;
@@ -39,9 +39,9 @@ export const ProductTable: React.FC<ProductTableProps> = ({
             <input
               type="checkbox"
               onChange={(e) =>
-                handleSelectProduct(e.target.checked ? productsData?.products.map((p) => p._id!) || [] : [])
+                handleSelectProduct(e.target.checked ? productsData?.data?.products.map((p) => p._id!) || [] : [])
               }
-              checked={selectedProducts.length === productsData?.products.length && productsData?.products.length > 0}
+              checked={selectedProducts.length === productsData?.data?.products.length && productsData?.data.products.length > 0}
               aria-label="Select all products"
             />
           </th>
@@ -54,7 +54,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {productsData?.products.map((product) => (
+        {productsData?.data?.products.map((product) => (
           <motion.tr
             key={product._id}
             initial={{ opacity: 0 }}
@@ -99,7 +99,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                     aria-label="Edit product category"
                   >
                     <option value="">Select Category</option>
-                    {categories?.map((cat) => (
+                    {categories?.data?.map((cat) => (
                       <option key={cat} value={cat}>
                         {cat}
                       </option>
@@ -201,12 +201,12 @@ export const ProductTable: React.FC<ProductTableProps> = ({
       >
         <FaArrowLeft /> {PRODUCT_BUTTONS.PREV}
       </motion.button>
-      <span aria-label={`Products page ${productsData?.currentPage} of ${productsData?.totalPages}`}>
-        Page {productsData?.currentPage} of {productsData?.totalPages} (Total: {productsData?.total})
+      <span aria-label={`Products page ${productsData?.data?.currentPage} of ${productsData?.data?.totalPages}`}>
+        Page {productsData?.data?.currentPage} of {productsData?.data?.totalPages} (Total: {productsData?.data?.total})
       </span>
       <motion.button
-        onClick={() => setPage(Math.min(page + 1, productsData?.totalPages || 1))}
-        disabled={page === productsData?.totalPages}
+        onClick={() => setPage(Math.min(page + 1, productsData?.data?.totalPages || 1))}
+        disabled={page === productsData?.data?.totalPages}
         className="p-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}

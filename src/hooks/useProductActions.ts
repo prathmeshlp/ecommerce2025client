@@ -10,7 +10,9 @@ export const useProductActions = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  // console.log(location,"location")
   const product: ProductData | undefined = location.state?.product;
+  console.log(product,"product")
 
   const discountedPrice = useMemo(() => {
     if (!product?.discount) return product?.price ?? 0;
@@ -52,7 +54,7 @@ export const useProductActions = () => {
     const cartItem = {
       productId: product._id,
       name: product.name,
-      price: discountedPrice,
+      price: product.price,
       quantity: 1,
       image: product.image,
     };

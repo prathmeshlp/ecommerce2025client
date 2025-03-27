@@ -5,7 +5,7 @@ import { removeFromCart, updateQuantity } from "../redux/cartSlice";
 import { useMutation } from "@tanstack/react-query";
 import { validateDiscount } from "../api/productApi";
 import { toast } from "react-hot-toast"; // Switched to react-hot-toast for consistency
-import { CartItem, AppliedDiscount, DiscountResponse } from "../types/types";
+import { CartItem, AppliedDiscount, DiscountResponse, ApiResponse } from "../types/types";
 import { CART_MESSAGES } from "../constants/cartConstants";
 
 export const useCartData = () => {
@@ -22,22 +22,23 @@ export const useCartData = () => {
     return appliedDiscount ? appliedDiscount.newSubtotal : subtotal;
   }, [subtotal, appliedDiscount]);
 
-  const applyDiscountMutation = useMutation<DiscountResponse, Error>({
+  const applyDiscountMutation = useMutation<ApiResponse<DiscountResponse>, Error>({
     mutationFn: () => {
       const productIds = cartItems.map((item) => item.productId);
       return validateDiscount(couponCode, productIds, subtotal, cartItems);
     },
-    onSuccess: (data) => {
-      if (data.success && data.discount) {
+    onSuccess: (response) => {
+      console.log(response,"data")
+      if (response?.data?.success && response?.data?.discount) {
         setAppliedDiscount({
-          code: data.discount.code,
-          discountAmount: data.discount.discountAmount,
-          newSubtotal: data.discount.newSubtotal,
-          discountedItems: data.discount.discountedItems,
+          code: response?.data?.discount.code,
+          discountAmount: response?.data?.discount.discountAmount,
+          newSubtotal: response?.data?.discount.newSubtotal,
+          discountedItems: response?.data?.discount.discountedItems,
         });
         toast.success(CART_MESSAGES.DISCOUNT_APPLIED);
       } else {
-        toast.error(data.error || "Failed to apply discount.");
+        toast.error(response?.data?.  error || "Failed to apply discount.");
       }
     },
     onError: (error) => {

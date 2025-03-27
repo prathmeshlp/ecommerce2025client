@@ -2,9 +2,9 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getDiscounts, createDiscount, updateDiscount, deleteDiscount, getProductsAdmin, bulkUpdateDiscounts } from "../api/adminApi";
 import { jwtDecode } from "jwt-decode";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { IDiscount, DiscountsResponse, ProductsResponse } from "../types/types";
+import { IDiscount, DiscountsResponse, ProductsResponse, ApiResponse } from "../types/types";
 import { DISCOUNT_MESSAGES } from "../constants/discountConstants";
 
 export const useDiscountManagementData = () => {
@@ -32,20 +32,22 @@ export const useDiscountManagementData = () => {
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
   const limit = 10;
 
-  const { data: discountsData, isLoading, error } = useQuery<DiscountsResponse>({
+  const { data: discountsData, isLoading, error } = useQuery<ApiResponse<DiscountsResponse>>({
     queryKey: ["discounts", page, filterStatus],
     queryFn: () => getDiscounts(page, limit),
     enabled: !!token && role === "admin",
   });
 
+  console.log(discountsData,"disdata")
+
   const filteredDiscounts = useMemo(() => {
     if (!discountsData) return [];
-    return discountsData.discounts.filter((d) =>
+    return discountsData?.data?.discounts?.filter((d) =>
       filterStatus === "all" ? true : filterStatus === "active" ? d.isActive : !d.isActive
     );
   }, [discountsData, filterStatus]);
 
-  const { data: productsData, isLoading: productsLoading } = useQuery<ProductsResponse>({
+  const { data: productsData, isLoading: productsLoading } = useQuery<ApiResponse<ProductsResponse>>({
     queryKey: ["productsForDiscounts", productsPage],
     queryFn: () => getProductsAdmin(productsPage, limit),
     enabled: !!token && role === "admin",
@@ -88,7 +90,7 @@ export const useDiscountManagementData = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["discounts"] });
       toast.success(DISCOUNT_MESSAGES.DELETE_SUCCESS);
-      if (filteredDiscounts.length === 1 && page > 1) setPage(page - 1);
+      if (filteredDiscounts?.length === 1 && page > 1) setPage(page - 1);
     },
     onError: () => toast.error(DISCOUNT_MESSAGES.DELETE_ERROR),
   });
@@ -182,7 +184,7 @@ export const useDiscountManagementData = () => {
   return {
     token,
     role,
-    discountsData: { ...discountsData, discounts: filteredDiscounts } as DiscountsResponse,
+    discountsData,
     isLoading,
     error,
     productsData,

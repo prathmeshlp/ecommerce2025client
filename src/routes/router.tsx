@@ -18,7 +18,7 @@ const UserManagement = lazy(() => import("../pages/admin/UserManagement"));
 const ProductManagement = lazy(() => import("../pages/admin/ProductManagement"));
 const OrderManagement = lazy(() => import("../pages/admin/OrderManagement"));
 const DiscountManagement = lazy(() => import("../pages/admin/DiscountManagement"));
-const ProductDescriptionPage = lazy(() => import("../pages/ProductDescriptionPage"));
+const ProductDescriptionPage = lazy(() => import("../pages/ProductDescription"));
 
 export const router = createBrowserRouter([
   {

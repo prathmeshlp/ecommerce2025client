@@ -38,7 +38,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ data }) => (
     >
       <h2 className="text-xl font-semibold text-yellow-800">{DASHBOARD_MESSAGES.REVENUE}</h2>
       <p className="text-3xl font-bold text-yellow-600">
-        ₹{data?.revenue.toLocaleString() || "0"}
+        ₹{data?.revenue  || "0"}
       </p>
     </motion.div>
     <motion.div

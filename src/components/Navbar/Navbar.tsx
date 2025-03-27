@@ -20,6 +20,8 @@ export const Navbar: React.FC = () => {
     handleLogout,
   } = useNavbarData();
 
+  // console.log(typeof cartCount === 'number',"cartCount")
+
   if (isLoading) {
     return (
       <div className="w-screen h-screen flex justify-center items-center">
@@ -53,7 +55,7 @@ export const Navbar: React.FC = () => {
               label={item.label}
               icon={item.icon}
               badgeCount={
-                item.label === "Cart" ? cartCount : item.label === "Wishlist" ? wishlist?.length : undefined
+                item.label === "Cart" ? cartCount : item.label === "Wishlist" ? wishlist?.data?.length : null
               }
               customIndex={index}
             />

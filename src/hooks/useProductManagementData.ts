@@ -4,7 +4,7 @@ import { getProductsAdmin, createProductAdmin, updateProductAdmin, deleteProduct
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { Product, ProductsResponse } from "../types/types";
+import { ApiResponse, Categories, Product, ProductsResponse } from "../types/types";
 import { PRODUCT_MESSAGES } from "../constants/productManagementConstants";
 import { getUniqueCategories } from "../api/productApi";
 
@@ -28,13 +28,13 @@ export const useProductManagementData = () => {
   const [bulkStock, setBulkStock] = useState<number>(0);
   const limit = 10;
 
-  const { data: productsData, isLoading: productsLoading, error: productsError } = useQuery<ProductsResponse>({
+  const { data: productsData, isLoading: productsLoading, error: productsError } = useQuery<ApiResponse<ProductsResponse>>({
     queryKey: ["products", page],
     queryFn: () => getProductsAdmin(page, limit),
     enabled: !!token && role === "admin",
   });
 
-  const { data: categories, isLoading: categoriesLoading } = useQuery<string[]>({
+  const { data: categories, isLoading: categoriesLoading } = useQuery<ApiResponse<Categories>>({
     queryKey: ["categories"],
     queryFn: getUniqueCategories,
     enabled: !!token && role === "admin",
@@ -69,7 +69,7 @@ export const useProductManagementData = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       toast.success(PRODUCT_MESSAGES.DELETE_SUCCESS);
-      if (productsData?.products.length === 1 && page > 1) setPage(page - 1);
+      if (productsData?.data?.products.length === 1 && page > 1) setPage(page - 1);
     },
     onError: () => toast.error(PRODUCT_MESSAGES.DELETE_ERROR),
   });

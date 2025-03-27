@@ -4,18 +4,19 @@ import { updateUser } from "../api/userApi";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { IUser, UsersData } from "../types/types";
+import { ApiResponse, IUser, UsersData } from "../types/types";
 import { USER_MESSAGES } from "../constants/userManagementConstants";
 import { deleteUserAdmin, getUsersAdmin } from "../api/adminApi";
+import { getToken } from "../utils/auth";
 
 export const useUserManagementData = () => {
-  const token = localStorage.getItem("token");
+  const token = getToken();
   const role = token ? jwtDecode<{ role: string }>(token).role : "";
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [editingUser, setEditingUser] = useState<IUser | null>(null);
 
-  const { data: usersData, isLoading, error } = useQuery<UsersData>({
+  const { data: usersData, isLoading, error } = useQuery<ApiResponse<UsersData>>({
     queryKey: ["users"],
     queryFn: () => getUsersAdmin(),
     enabled: !!token && role === "admin",

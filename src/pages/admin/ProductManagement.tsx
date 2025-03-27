@@ -37,6 +37,8 @@ const ProductManagement: React.FC = () => {
     deleteMutation,
   } = useProductManagementData();
 
+console.log(categories,"cat")
+
   if (!token || role !== "admin") return null;
 
   if (productsLoading || categoriesLoading) {
@@ -71,7 +73,7 @@ const ProductManagement: React.FC = () => {
         setNewProduct={setNewProduct}
         isCustomCategory={isCustomCategory}
         setIsCustomCategory={setIsCustomCategory}
-        categories={categories}
+        categories={categories?.data}
         onAddProduct={handleAddProduct}
       />
 
@@ -90,12 +92,12 @@ const ProductManagement: React.FC = () => {
       )}
 
       <ProductTable
-        productsData={productsData}
+        productsData={productsData!}
         editingProduct={editingProduct}
         setEditingProduct={setEditingProduct}
         selectedProducts={selectedProducts}
         handleSelectProduct={handleSelectProduct}
-        categories={categories}
+        categories={categories?.data}
         onEdit={handleEdit}
         onSave={handleSave}
         onDelete={(productId) => deleteMutation.mutate(productId)}

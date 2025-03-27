@@ -8,12 +8,19 @@ interface NavItemProps {
   to: string;
   label: string;
   icon: IconType;
-  badgeCount?: number;
+  badgeCount?: number| null;
   customIndex: number;
 }
 
-export const NavItem: React.FC<NavItemProps> = ({ to, label, icon: Icon, badgeCount, customIndex }) => {
-  const navItemVariants = {
+export const NavItem: React.FC<NavItemProps> = ({
+  to,
+  label,
+  icon: Icon,
+  badgeCount,
+  customIndex,
+}) => {
+  // console.log(`${label} badgeCount:`, badgeCount);
+    const navItemVariants = {
     hidden: { opacity: 0, y: -20 },
     visible: (i: number) => ({
       opacity: 1,
@@ -23,11 +30,16 @@ export const NavItem: React.FC<NavItemProps> = ({ to, label, icon: Icon, badgeCo
   };
 
   return (
-    <motion.div custom={customIndex} variants={navItemVariants} initial="hidden" animate="visible">
+    <motion.div
+      custom={customIndex}
+      variants={navItemVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <Link to={to} className={NAV_CLASSES.LINK} aria-label={label}>
         <Icon className="mr-1" />
         {label}
-        {badgeCount && badgeCount > 0 && (
+        {badgeCount && badgeCount > 0 &&   (
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}

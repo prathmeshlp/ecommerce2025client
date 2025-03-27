@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import { jwtDecode } from "jwt-decode";
 import { PuffLoader } from "react-spinners";
 import { addReview, getReviews } from "../api/productApi";
+import { ApiResponse } from "../types/types";
 
 interface Review {
   _id: string;
@@ -25,10 +26,12 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
   const token = localStorage.getItem("token");
   const userId = token ? jwtDecode<{ id: string }>(token).id : "";
 
-  const { data: reviews, isLoading } = useQuery<Review[]>({
+  const { data: reviews, isLoading } = useQuery<ApiResponse<Review[]>>({
     queryKey: ["reviews", productId],
     queryFn: () => getReviews(productId),
   });
+
+  console.log(reviews,"reviews")
 
   const addReviewMutation = useMutation({
     mutationFn: (data: { rating: number; comment: string }) =>
@@ -60,7 +63,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
         className="w-full p-4"
       >
         <h3 className="text-2xl font-bold mt-4">Reviews</h3>
-        {reviews?.map((review) => (
+        {reviews?.data?.map((review) => (
           <div key={review._id} className="border-b py-2">
             <p>Rating: {review.rating} / 5</p>
             <p>{review.comment}</p>

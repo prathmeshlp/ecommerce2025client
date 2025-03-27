@@ -19,7 +19,7 @@ const ProductDescriptionPage: React.FC = () => {
 
   if (!product) {
     return (
-      <div className="text-center mt-10">
+      <div className="text-center mt-20">
         <p className="text-gray-600">{PRODUCT_MESSAGES.NOT_FOUND}</p>
         <button
           onClick={handleGoBack}
@@ -61,6 +61,6 @@ const ProductDescriptionPage: React.FC = () => {
   );
 };
 
-ProductDescriptionPage.displayName = "ProductDescriptionPage";
+// ProductDescriptionPage.displayName = "ProductDescriptionPage";
 
 export default ProductDescriptionPage;

@@ -1,11 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaEdit, FaTrash, FaArrowLeft, FaArrowRight, FaEye } from "react-icons/fa";
-import { Order, OrdersResponse } from "../types/types";
-import { ORDER_BUTTONS } from "../constants/orderManagementConstants";
+import { ApiResponse, Order, OrdersResponse } from "../../types/types";
+import { ORDER_BUTTONS } from "../../constants/orderManagementConstants";
 
 interface OrderTableProps {
-  ordersData: OrdersResponse | undefined;
+  ordersData: ApiResponse<OrdersResponse> | undefined;
   editingOrder: Order | null;
   setEditingOrder: (order: Order | null) => void;
   expandedOrderId: string | null;
@@ -41,9 +41,9 @@ export const OrderTable: React.FC<OrderTableProps> = ({
             <input
               type="checkbox"
               onChange={(e) =>
-                handleSelectOrder(e.target.checked ? ordersData?.orders.map((o) => o._id) || [] : [])
+                handleSelectOrder(e.target.checked ? ordersData?.data?.orders.map((o) => o._id) || [] : [])
               }
-              checked={selectedOrders.length === ordersData?.orders.length && ordersData?.orders.length > 0}
+              checked={selectedOrders.length === ordersData?.data?.orders.length && ordersData?.data?.orders.length > 0}
               aria-label="Select all orders"
             />
           </th>
@@ -56,7 +56,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {ordersData?.orders.map((order) => (
+        {ordersData?.data?.orders.map((order) => (
           <React.Fragment key={order._id}>
             <motion.tr
               initial={{ opacity: 0 }}
@@ -232,12 +232,12 @@ export const OrderTable: React.FC<OrderTableProps> = ({
       >
         <FaArrowLeft /> {ORDER_BUTTONS.PREV}
       </motion.button>
-      <span aria-label={`Orders page ${ordersData?.currentPage} of ${ordersData?.totalPages}`}>
-        Page {ordersData?.currentPage} of {ordersData?.totalPages} (Total: {ordersData?.total})
+      <span aria-label={`Orders page ${ordersData?.data?.currentPage} of ${ordersData?.data?.totalPages}`}>
+        Page {ordersData?.data?.currentPage} of {ordersData?.data?.totalPages} (Total: {ordersData?.data?.total})
       </span>
       <motion.button
-        onClick={() => setPage(Math.min(page + 1, ordersData?.totalPages || 1))}
-        disabled={page === ordersData?.totalPages}
+        onClick={() => setPage(Math.min(page + 1, ordersData?.data?.totalPages || 1))}
+        disabled={page === ordersData?.data?.totalPages}
         className="p-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}

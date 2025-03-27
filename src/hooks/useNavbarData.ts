@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { RootState } from "../redux/store";
 import { logoutUser } from "../api/userApi";
 import { getWishlist } from "../api/wishlistApi";
-import { WishlistItem } from "../types/types";
+import { ApiResponse, WishlistItem } from "../types/types";
 import { NAVBAR_MESSAGES } from "../constants/navbarConstants";
 
 export const useNavbarData = () => {
@@ -19,11 +19,14 @@ export const useNavbarData = () => {
   const userId = token ? jwtDecode<{ id: string }>(token).id : null;
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
 
-  const { data: wishlist, isLoading } = useQuery<WishlistItem[]>({
+ const { data: wishlist, isLoading } = useQuery<ApiResponse<WishlistItem[]>>({
     queryKey: ["wishlist", userId],
     queryFn: () => getWishlist(userId!),
     enabled: !!userId,
   });
+
+
+  // console.log(wishlist,"wishlist")
 
   const logoutMutation = useMutation({
     mutationFn: logoutUser,

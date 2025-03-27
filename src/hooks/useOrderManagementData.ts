@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import useDebounce from "./useDebounce";
-import { Order, OrdersResponse } from "../types/types";
+import { ApiResponse, Order, OrdersResponse } from "../types/types";
 import { ORDER_MESSAGES } from "../constants/orderManagementConstants";
 
 export const useOrderManagementData = () => {
@@ -25,7 +25,7 @@ export const useOrderManagementData = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const limit = 10;
 
-  const { data: ordersData, isLoading, error } = useQuery<OrdersResponse>({
+  const { data: ordersData, isLoading, error } = useQuery<ApiResponse<OrdersResponse>>({
     queryKey: ["orders", page, paymentStatusFilter, debouncedSearchQuery],
     queryFn: () => getOrders(page, limit, paymentStatusFilter, debouncedSearchQuery),
     enabled: !!token && role === "admin",
@@ -47,7 +47,7 @@ export const useOrderManagementData = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       toast.success(ORDER_MESSAGES.DELETE_SUCCESS);
-      if (ordersData?.orders.length === 1 && page > 1) setPage(page - 1);
+      if (ordersData?.data?.orders.length === 1 && page > 1) setPage(page - 1);
     },
     onError: () => toast.error(ORDER_MESSAGES.DELETE_ERROR),
   });

@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaTrash } from "react-icons/fa";
-import { CartItem, AppliedDiscount } from "../types/types";
+import { CartItem, AppliedDiscount } from "../../types/types";
 
 interface CartItemsListProps {
   cartItems: CartItem[];
@@ -16,6 +16,7 @@ export const CartItemsList: React.FC<CartItemsListProps> = ({
   onRemoveItem,
   onUpdateQuantity,
 }) => {
+  console.log(appliedDiscount,"appliedDiscount")
   return (
     <div className="flex flex-col items-center w-1/2">
       {cartItems.map((item) => {

@@ -1,8 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaPlus } from "react-icons/fa";
-import {  ProductsResponse } from "../types/types";
-import { DISCOUNT_MESSAGES, DISCOUNT_BUTTONS } from "../constants/discountConstants";
+import { DISCOUNT_MESSAGES, DISCOUNT_BUTTONS } from "../../constants/discountConstants";
+import { ApiResponse, ProductsResponse } from "../../types/types";
+
 
 interface AddDiscountFormProps {
   newDiscount: {
@@ -29,7 +30,7 @@ interface AddDiscountFormProps {
     isActive: boolean;
     applicableProducts: { _id: string; name: string }[];
   }) => void;
-  productsData: ProductsResponse | undefined;
+  productsData: ApiResponse<ProductsResponse> | undefined;
   productsLoading: boolean;
   productsPage: number;
   setProductsPage: (page: number) => number;
@@ -139,7 +140,7 @@ export const AddDiscountForm: React.FC<AddDiscountFormProps> = ({
             setNewDiscount({
               ...newDiscount,
               applicableProducts: Array.from(e.target.selectedOptions, (option) => {
-                const product = productsData?.products.find((p) => p._id === option.value);
+                const product = productsData?.data?.products.find((p) => p._id === option.value);
                 return product && product._id
                   ? { _id: product._id, name: product.name }
                   : { _id: option.value, name: "" };
@@ -150,7 +151,7 @@ export const AddDiscountForm: React.FC<AddDiscountFormProps> = ({
           disabled={productsLoading}
           aria-label="Applicable products"
         >
-          {productsData?.products.map((product) => (
+          {productsData?.data?.products.map((product) => (
             <option key={product._id} value={product._id}>
               {product.name}
             </option>
@@ -165,12 +166,12 @@ export const AddDiscountForm: React.FC<AddDiscountFormProps> = ({
           >
             Prev
           </button>
-          <span aria-label={`Products page ${productsData?.currentPage} of ${productsData?.totalPages}`}>
-            Page {productsData?.currentPage} of {productsData?.totalPages}
+          <span aria-label={`Products page ${productsData?.data?.currentPage} of ${productsData?.data?.totalPages}`}>
+            Page {productsData?.data?.currentPage} of {productsData?.data?.totalPages}
           </span>
           <button
-            onClick={() => setProductsPage(Math.min(productsPage + 1, productsData?.totalPages || 1))}
-            disabled={productsPage === productsData?.totalPages || productsLoading}
+            onClick={() => setProductsPage(Math.min(productsPage + 1, productsData?.data?.totalPages || 1))}
+            disabled={productsPage === productsData?.data?.totalPages || productsLoading}
             className="p-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
             aria-label="Next products page"
           >

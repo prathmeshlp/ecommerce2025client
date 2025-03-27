@@ -13,6 +13,7 @@ const Home: React.FC = () => {
   const { filters, setFilters, page, setPage, paginatedProducts, totalPages } =
     useProductFilters(products);
 
+    // console.log(categories)
   if (isLoading)
     return (
       <div className="w-screen h-screen flex justify-center items-center">

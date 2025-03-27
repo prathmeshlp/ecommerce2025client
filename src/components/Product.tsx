@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { FaHeart } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import { PuffLoader } from "react-spinners";
+import { ApiResponse, WishlistItem, } from "../types/types";
 
 interface ProductProps {
   product_id: string;
@@ -20,9 +21,6 @@ interface ProductProps {
   onClick: () => void;
 }
 
-export interface WishlistItem {
-  productId: { _id: string; name: string; price: number; image: string };
-}
 
 const Product: React.FC<ProductProps> = ({
   product_id,
@@ -45,13 +43,17 @@ const Product: React.FC<ProductProps> = ({
     onError: () => toast.error("Failed to add to wishlist."),
   });
 
-  const { data: wishlist, isLoading } = useQuery<WishlistItem[]>({
+  const { data: wishlist, isLoading } = useQuery<ApiResponse<WishlistItem>>({
     queryKey: ["wishlist", userId],
     queryFn: () => getWishlist(userId!),
     enabled: !!userId,
   });
 
-  const isInWishlist = wishlist?.some((item) => item.productId._id === product_id) ?? false;
+  // console.log(wishlist,"wishlist")
+
+  const isInWishlist = Array.isArray(wishlist?.data) 
+    ? wishlist.data.some((item) => item.productId._id === product_id) 
+    : false;
 
   const heartVariants = {
     default: { scale: 1, color: "#9ca3af" }, // Gray heart

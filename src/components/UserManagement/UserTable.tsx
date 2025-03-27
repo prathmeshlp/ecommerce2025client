@@ -1,11 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import { IUser, UsersData } from "../../types/types";
+import { ApiResponse, IUser, UsersData } from "../../types/types";
 import { USER_BUTTONS } from "../../constants/userManagementConstants";
 
 interface UserTableProps {
-  usersData: UsersData | undefined;
+  usersData: ApiResponse<UsersData>;
   editingUser: IUser | null;
   setEditingUser: (user: IUser | null) => void;
   onEdit: (user: IUser) => void;
@@ -21,6 +21,8 @@ export const UserTable: React.FC<UserTableProps> = ({
   onSave,
   onDelete,
 }) => (
+
+  
   <div className="bg-white p-4 rounded-lg shadow-md">
     <table className="w-full text-left">
       <thead>
@@ -34,7 +36,7 @@ export const UserTable: React.FC<UserTableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {usersData?.users.map((user) => (
+        {usersData?.data?.users.map((user) => (
           <motion.tr
             key={user._id}
             initial={{ opacity: 0 }}

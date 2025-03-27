@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
-import useCustomFormik from "../hooks/useCustomFormik";
+import useCustomFormik from "../../hooks/useCustomFormik";
 import * as Yup from "yup";
-import { ShippingAddress } from "../types/types";
-import { CHECKOUT_MESSAGES } from "../constants/checkoutConstants";
+import { ShippingAddress } from "../../types/types";
+import { CHECKOUT_MESSAGES } from "../../constants/checkoutConstants";
 
 interface ShippingFormProps {
   onSubmit: (values: ShippingAddress) => void;

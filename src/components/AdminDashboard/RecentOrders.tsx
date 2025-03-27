@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { DashboardData } from "../types/types";
-import { DASHBOARD_MESSAGES, STATUS_STYLES } from "../constants/dashboardConstants";
+import { DashboardData } from "../../types/types";
+import { DASHBOARD_MESSAGES, STATUS_STYLES } from "../../constants/dashboardConstants";
 
 interface RecentOrdersProps {
   data: DashboardData["recentOrders"];

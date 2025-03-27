@@ -15,8 +15,9 @@ export const useAuthData = () => {
 
   const loginMutation = useMutation<AuthResponse, Error, Omit<AuthFormData, "username">>({
     mutationFn: loginUser,
-    onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
+    onSuccess: (res) => {
+      console.log(res,"data")
+      localStorage.setItem("token", res?.data.token);
       toast.success(AUTH_MESSAGES.LOGIN_SUCCESS);
       navigate("/app/home");
     },
@@ -25,8 +26,8 @@ export const useAuthData = () => {
 
   const registerMutation = useMutation<AuthResponse, Error, AuthFormData>({
     mutationFn: registerUser,
-    onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
+    onSuccess: (res) => {
+      localStorage.setItem("token", res.data.token);
       toast.success(AUTH_MESSAGES.REGISTER_SUCCESS);
       setIsLogin(true);
       setEmail("");

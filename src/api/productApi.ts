@@ -8,6 +8,7 @@ export const getProducts = () =>
 export const getUniqueCategories = () =>
   api.get(API_CONSTANTS.ENDPOINTS.PRODUCTS.CATEGORIES).then((res) => res.data);
 
+
 export const getReviews = (productId: string) =>
   api.get(API_CONSTANTS.ENDPOINTS.PRODUCTS.REVIEWS.replace(":productId", productId)).then((res) => res.data);
 

@@ -19,6 +19,8 @@ const UserManagement: React.FC = () => {
     deleteMutation,
   } = useUserManagementData();
 
+  console.log(usersData,"usersData")
+
   if (!token || role !== "admin") return null;
 
   if (isLoading) {
@@ -49,7 +51,7 @@ const UserManagement: React.FC = () => {
       </motion.h1>
 
       <UserTable
-        usersData={usersData}
+        usersData={usersData!}
         editingUser={editingUser}
         setEditingUser={setEditingUser}
         onEdit={handleEdit}

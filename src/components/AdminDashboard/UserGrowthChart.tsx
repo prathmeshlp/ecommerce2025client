@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { DashboardData } from "../types/types";
-import { DASHBOARD_MESSAGES } from "../constants/dashboardConstants";
+import { DashboardData } from "../../types/types";
+import { DASHBOARD_MESSAGES } from "../../constants/dashboardConstants";
 
 interface UserGrowthChartProps {
   data: DashboardData["userGrowth"];
