@@ -185,11 +185,11 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                 className="bg-gray-50"
               >
                 <td colSpan={7} className="p-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="border-2 p-4">
                     <div>
                       <h3 className="text-lg font-semibold">Order Items</h3>
                       {order.items.map((item, index) => (
-                        <div key={item.productId?._id || index} className="flex justify-between py-2">
+                        <div key={item.productId?._id || index} className="flex justify-start gap-4 py-2">
                           {item.productId ? (
                             <>
                               <span>{item.productId.name} (x{item.quantity})</span>

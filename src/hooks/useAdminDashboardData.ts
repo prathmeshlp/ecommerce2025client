@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { getToken } from "../utils/auth";
-import { DashboardData } from "../types/types";
+import { ApiResponse, DashboardData } from "../types/types";
 import { DASHBOARD_MESSAGES } from "../constants/dashboardConstants";
 
 export const useAdminDashboardData = () => {
@@ -19,7 +19,7 @@ export const useAdminDashboardData = () => {
     navigate("/auth");
   }
 
-  const { data, isLoading, error } = useQuery<DashboardData>({
+  const { data:response, isLoading, error } = useQuery<ApiResponse<DashboardData>>({
     queryKey: ["adminDashboard"],
     queryFn: getAdminDashboard,
     enabled: !!token && role === "admin",
@@ -36,5 +36,5 @@ export const useAdminDashboardData = () => {
     return { token, data: null, isLoading: false, error: null };
   }
 
-  return { token, data: data || null, isLoading, error };
+  return { token, data: response?.data || null, isLoading, error };
 };

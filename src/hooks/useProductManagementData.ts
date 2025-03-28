@@ -1,10 +1,21 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProductsAdmin, createProductAdmin, updateProductAdmin, deleteProductAdmin, bulkUpdateProducts } from "../api/adminApi";
+import {
+  getProductsAdmin,
+  createProductAdmin,
+  updateProductAdmin,
+  deleteProductAdmin,
+  bulkUpdateProducts,
+} from "../api/adminApi";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { ApiResponse, Categories, Product, ProductsResponse } from "../types/types";
+import {
+  ApiResponse,
+  Categories,
+  Product,
+  ProductsResponse,
+} from "../types/types";
 import { PRODUCT_MESSAGES } from "../constants/productManagementConstants";
 import { getUniqueCategories } from "../api/productApi";
 
@@ -20,6 +31,7 @@ export const useProductManagementData = () => {
     image: "",
     category: "",
     stock: 0,
+    description: "",
   });
   const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [page, setPage] = useState(1);
@@ -28,13 +40,21 @@ export const useProductManagementData = () => {
   const [bulkStock, setBulkStock] = useState<number>(0);
   const limit = 10;
 
-  const { data: productsData, isLoading: productsLoading, error: productsError } = useQuery<ApiResponse<ProductsResponse>>({
+  const {
+    data: productsData,
+    isLoading: productsLoading,
+    error: productsError,
+  } = useQuery<ApiResponse<ProductsResponse>>({
     queryKey: ["products", page],
     queryFn: () => getProductsAdmin(page, limit),
     enabled: !!token && role === "admin",
   });
 
-  const { data: categories, isLoading: categoriesLoading } = useQuery<ApiResponse<Categories>>({
+
+
+  const { data: categories, isLoading: categoriesLoading } = useQuery<
+    ApiResponse<Categories>
+  >({
     queryKey: ["categories"],
     queryFn: getUniqueCategories,
     enabled: !!token && role === "admin",
@@ -46,14 +66,27 @@ export const useProductManagementData = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       toast.success(PRODUCT_MESSAGES.CREATE_SUCCESS);
-      setNewProduct({ name: "", price: 0, image: "", category: "", stock: 0 });
+      setNewProduct({
+        name: "",
+        price: 0,
+        image: "",
+        category: "",
+        stock: 0,
+        description: "",
+      });
       setIsCustomCategory(false);
     },
     onError: () => toast.error(PRODUCT_MESSAGES.CREATE_ERROR),
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ productId, data }: { productId: string; data: Partial<Product> }) => updateProductAdmin(productId, data),
+    mutationFn: ({
+      productId,
+      data,
+    }: {
+      productId: string;
+      data: Partial<Product>;
+    }) => updateProductAdmin(productId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -69,13 +102,20 @@ export const useProductManagementData = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       toast.success(PRODUCT_MESSAGES.DELETE_SUCCESS);
-      if (productsData?.data?.products.length === 1 && page > 1) setPage(page - 1);
+      if (productsData?.data?.products.length === 1 && page > 1)
+        setPage(page - 1);
     },
     onError: () => toast.error(PRODUCT_MESSAGES.DELETE_ERROR),
   });
 
   const bulkUpdateMutation = useMutation({
-    mutationFn: ({ productIds, stock }: { productIds: string[]; stock: number }) => bulkUpdateProducts(productIds, stock),
+    mutationFn: ({
+      productIds,
+      stock,
+    }: {
+      productIds: string[];
+      stock: number;
+    }) => bulkUpdateProducts(productIds, stock),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       setSelectedProducts([]);
@@ -93,7 +133,11 @@ export const useProductManagementData = () => {
       toast.error(PRODUCT_MESSAGES.NAME_REQUIRED);
       return false;
     }
-    if (product.price === undefined || product.price <= 0 || isNaN(product.price)) {
+    if (
+      product.price === undefined ||
+      product.price <= 0 ||
+      isNaN(product.price)
+    ) {
       toast.error(PRODUCT_MESSAGES.PRICE_POSITIVE);
       return false;
     }
@@ -101,7 +145,11 @@ export const useProductManagementData = () => {
       toast.error(PRODUCT_MESSAGES.IMAGE_REQUIRED);
       return false;
     }
-    if (product.stock === undefined || product.stock < 0 || isNaN(product.stock)) {
+    if (
+      product.stock === undefined ||
+      product.stock < 0 ||
+      isNaN(product.stock)
+    ) {
       toast.error(PRODUCT_MESSAGES.STOCK_NON_NEGATIVE);
       return false;
     }
@@ -149,7 +197,10 @@ export const useProductManagementData = () => {
       toast.error(PRODUCT_MESSAGES.STOCK_INVALID);
       return;
     }
-    bulkUpdateMutation.mutate({ productIds: selectedProducts, stock: bulkStock });
+    bulkUpdateMutation.mutate({
+      productIds: selectedProducts,
+      stock: bulkStock,
+    });
   };
 
   if (!token || role !== "admin") {

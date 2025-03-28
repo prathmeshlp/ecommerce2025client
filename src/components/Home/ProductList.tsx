@@ -35,6 +35,7 @@ export const ProductList: React.FC<ProductListProps> = ({
             productPrice={product.price}
             productImage={product.image}
             discount={product.discount}
+            avgRating={product.avgRating!}
             onClick={() => handleProductClick(product)}
           />
         ))}

@@ -14,12 +14,12 @@ export const useProductData = () => {
     enabled: !!token,
   });
 
-  console.log(categoriesQuery)
   const productsQuery = useQuery<PaginatedResponse>({
     queryKey: ["products"],
     queryFn: () => getProducts(),
   });
 
+  console.log(productsQuery,"productsQuery")
 
   return {
     categories: categoriesQuery?.data?.data || [],

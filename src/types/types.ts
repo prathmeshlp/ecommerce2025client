@@ -42,6 +42,7 @@ export interface Product {
   image: string;
   category?: string;
   stock?: number;
+  description:string;
   createdAt?: string;
 }
 

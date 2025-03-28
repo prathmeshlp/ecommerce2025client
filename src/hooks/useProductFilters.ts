@@ -12,6 +12,8 @@ export const useProductFilters = (products: ProductData[]) => {
   });
   const [page, setPage] = useState(1);
 
+
+
   const applyCategoryFilter = useCallback<FilterFunction>(
     (product) => (filters.selectedCategory ? product.category === filters.selectedCategory : true),
     [filters.selectedCategory]

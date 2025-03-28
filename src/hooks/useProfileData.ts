@@ -3,20 +3,23 @@ import { getUser, updateUser } from "../api/userApi";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast"; // Switched to react-hot-toast
-import { User, Address } from "../types/types";
+import { User, Address, ApiResponse } from "../types/types";
 import { PROFILE_MESSAGES } from "../constants/profileConstants";
+import { getToken } from "../utils/auth";
 
 export const useProfileData = () => {
   const queryClient = useQueryClient();
-  const token = localStorage.getItem("token");
+  const token = getToken();
   const userId = token ? jwtDecode<{ id: string }>(token).id : "";
   const navigate = useNavigate();
 
-  const { data: user, isLoading, error } = useQuery<User>({
+  const { data: response, isLoading, error } = useQuery<ApiResponse<User>>({
     queryKey: ["user", userId],
     queryFn: () => getUser(userId),
     enabled: !!userId,
   });
+
+  console.log(response)
 
   const updateProfileMutation = useMutation({
     mutationFn: (data: Partial<User>) => updateUser(userId, data),
@@ -53,7 +56,7 @@ export const useProfileData = () => {
 
   return {
     token,
-    user,
+    user:response?.data,
     isLoading,
     error,
     updateProfileMutation,

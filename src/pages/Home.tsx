@@ -12,7 +12,7 @@ const Home: React.FC = () => {
   const { categories, products, isLoading, error } = useProductData();
   const { filters, setFilters, page, setPage, paginatedProducts, totalPages } =
     useProductFilters(products);
-
+    
     // console.log(categories)
   if (isLoading)
     return (

@@ -60,7 +60,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full p-4"
+        className="w-full"
       >
         <h3 className="text-2xl font-bold mt-4">Reviews</h3>
         {reviews?.data?.map((review) => (

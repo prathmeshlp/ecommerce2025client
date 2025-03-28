@@ -73,6 +73,7 @@ const OrderManagement: React.FC = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         setPage={setPage}
+        isLoading={isLoading}
       />
 
       {selectedOrders.length > 0 && (
