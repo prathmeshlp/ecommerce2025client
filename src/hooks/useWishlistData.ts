@@ -44,9 +44,13 @@ export const useWishlistData = () => {
     removeMutation.mutate({ userId, productId });
   };
 
-  const handleProductClick = (productId: string) => {
-    navigate(`/app/product/${productId}`);
-  };
+  // const handleProductClick = (productId: string) => {
+  //   navigate(`/app/product/${productId}`);
+  // };
+
+    const handleProductClick = (item: WishlistItem) => {
+      navigate(`/app/product/${item?.productId?._id}`, { state: { item } });
+    };
 
   return {
     userId,

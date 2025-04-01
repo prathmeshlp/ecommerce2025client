@@ -41,7 +41,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
               All
             </button>
           </li>
-          {categories.map((cat) => (
+          {categories?.map((cat) => (
             <li key={cat}>
               <button
                 onClick={() => setSelectedCategory(cat)}

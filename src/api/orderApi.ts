@@ -1,8 +1,8 @@
 import { api } from "./api";
 import { API_CONSTANTS } from "./constants";
-import { OrderRequest, OrderResponse } from "../types/types";
+import { ApiResponse, OrderRequest, OrderResponse } from "../types/types";
 
-export const createOrder = (data: OrderRequest): Promise<OrderResponse> =>
+export const createOrder = (data: OrderRequest): Promise<ApiResponse<OrderResponse>> =>
   api.post(API_CONSTANTS.ENDPOINTS.ORDERS.CREATE, data).then((res) => res.data);
 
 export const verifyPayment = (data: {

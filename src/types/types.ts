@@ -52,12 +52,16 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  description:string
 }
+
+
 
 export interface AppliedDiscount {
   code: string;
-  discountAmount: number;
-  newSubtotal: number;
+  discountType: "percentage" | "fixed";
+  discountValue: number;
+  discountAmount: number; // Calculated on frontend
   discountedItems: { productId: string; discountedPrice: number }[];
 }
 
@@ -67,9 +71,8 @@ export interface DiscountResponse {
     code: string;
     discountType: "percentage" | "fixed";
     discountValue: number;
-    discountAmount: number;
-    newSubtotal: number;
     discountedItems: { productId: string; discountedPrice: number }[];
+    maxDiscountAmount?: number;
   };
   error?: string;
 }
@@ -128,7 +131,7 @@ export interface Order {
   items: OrderItem[];
   total: number;
   subtotal: number;
-  discount?: { code: string; amount: number };
+  discount?: { code: string; amount: number }[];
   shippingAddress: {
     street: string;
     city: string;
@@ -309,7 +312,7 @@ export interface ShippingAddress {
 export interface OrderRequest {
   items: CartItem[];
   shippingAddress: ShippingAddress;
-  discountCode?: string; // Optional, based on your discount integration
+  discountCode?: string[]; // Optional, based on your discount integration
 }
 
 export interface ApiResponse<T> {

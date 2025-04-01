@@ -1,6 +1,7 @@
 import { api } from "./api";
 import { API_CONSTANTS } from "./constants";
-import { Product } from "../types/types";
+// import { Product } from "../types/types";
+import { CartItem } from "../redux/cartSlice";
 
 export const getProducts = () =>
   api.get(API_CONSTANTS.ENDPOINTS.PRODUCTS.LIST).then((res) => res.data);
@@ -17,7 +18,7 @@ export const addReview = (productId: string, data: { userId: string; rating: num
     .post(API_CONSTANTS.ENDPOINTS.PRODUCTS.REVIEWS.replace(":productId", productId), data)
     .then((res) => res.data);
 
-export const validateDiscount = (code: string, productIds: string[], subtotal: number, items: Product[]) =>
+export const validateDiscount = (code: string, productIds: string[], subtotal: number, items: CartItem[]) =>
   api
     .post(API_CONSTANTS.ENDPOINTS.PRODUCTS.VALIDATE_DISCOUNT, { code, productIds, subtotal, items })
     .then((res) => res.data);

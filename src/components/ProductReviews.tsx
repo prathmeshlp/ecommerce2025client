@@ -31,7 +31,6 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
     queryFn: () => getReviews(productId),
   });
 
-  console.log(reviews,"reviews")
 
   const addReviewMutation = useMutation({
     mutationFn: (data: { rating: number; comment: string }) =>

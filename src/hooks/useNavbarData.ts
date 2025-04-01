@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -13,20 +13,24 @@ import { NAVBAR_MESSAGES } from "../constants/navbarConstants";
 export const useNavbarData = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const [wishlistCount, setWishlistCount] = useState<number | undefined>(undefined);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const role = token ? jwtDecode<{ role: string }>(token).role : "";
   const userId = token ? jwtDecode<{ id: string }>(token).id : null;
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
 
- const { data: wishlist, isLoading } = useQuery<ApiResponse<WishlistItem[]>>({
+  const { data: wishlist, isLoading } = useQuery<ApiResponse<WishlistItem[]>>({
     queryKey: ["wishlist", userId],
     queryFn: () => getWishlist(userId!),
     enabled: !!userId,
   });
 
-
-  // console.log(wishlist,"wishlist")
+  useEffect(() => {
+    if (wishlist) {
+      setWishlistCount(wishlist?.data?.length);
+    }
+  }, [wishlist]);
 
   const logoutMutation = useMutation({
     mutationFn: logoutUser,
@@ -47,7 +51,7 @@ export const useNavbarData = () => {
   return {
     cartCount,
     role,
-    wishlist,
+    wishlistCount,
     isLoading,
     isAdminMenuOpen,
     setIsAdminMenuOpen,

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { addToCart } from "../redux/cartSlice";
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 import { ProductData } from "../types/types";
 import { PRODUCT_MESSAGES } from "../constants/productConstants";
 
@@ -18,7 +18,9 @@ export const useProductActions = () => {
     if (!product?.discount) return product?.price ?? 0;
     return product.discount.discountType === "percentage"
       ? Math.round(product.price * (1 - product.discount.discountValue / 100))
-      : product.price - product.discount.discountValue;
+      : product.discount.discountType === "fixed"
+      ? Math.round(product.price - product?.discount?.discountValue)
+      : product.price;
   }, [product]);
 
   const savings = useMemo(() => {
@@ -38,7 +40,7 @@ export const useProductActions = () => {
     const cartItem = {
       productId: product._id,
       name: product.name,
-      price: discountedPrice,
+      price: product.price,
       quantity: 1,
       image: product.image,
     };

@@ -9,10 +9,10 @@ interface OrderSummaryProps {
   total: number;
   couponCode: string;
   setCouponCode: (value: string) => void;
-  appliedDiscount: AppliedDiscount | null;
+  appliedDiscounts: AppliedDiscount[]; 
   isApplyingDiscount: boolean;
   onApplyDiscount: () => void;
-  onRemoveDiscount: () => void;
+  onRemoveDiscount: (code: string) => void;
   cartItems: CartItem[];
 }
 
@@ -21,13 +21,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   total,
   couponCode,
   setCouponCode,
-  appliedDiscount,
+  appliedDiscounts,
   isApplyingDiscount,
   onApplyDiscount,
   onRemoveDiscount,
   cartItems,
 }) => {
   const navigate = useNavigate();
+
 
   return (
     <div className="w-1/3">
@@ -41,46 +42,45 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           <input
             value={couponCode}
             onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-            placeholder="Enter Coupon Code If Applicable"
+            placeholder="Enter Coupon Code"
             className="p-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={appliedDiscount !== null || isApplyingDiscount}
+            disabled={isApplyingDiscount}
             aria-label="Coupon code input"
           />
-          {appliedDiscount ? (
-            <motion.button
-              onClick={onRemoveDiscount}
-              className="p-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              aria-label="Remove discount"
-            >
-              {CART_MESSAGES.REMOVE_DISCOUNT}
-            </motion.button>
-          ) : (
-            <motion.button
-              onClick={onApplyDiscount}
-              className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={isApplyingDiscount}
-              aria-label="Apply discount"
-            >
-              {isApplyingDiscount ? CART_MESSAGES.APPLYING_DISCOUNT : CART_MESSAGES.APPLY_DISCOUNT}
-            </motion.button>
-          )}
+          <motion.button
+            onClick={onApplyDiscount}
+            className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            disabled={isApplyingDiscount}
+            aria-label="Apply discount"
+          >
+            {isApplyingDiscount ? CART_MESSAGES.APPLYING_DISCOUNT : CART_MESSAGES.APPLY_DISCOUNT}
+          </motion.button>
         </div>
-        {appliedDiscount && (
-          <div className="flex justify-between mb-2 text-green-600">
-            <span>Discount ({appliedDiscount.code}):</span>
-            <span>-₹{appliedDiscount.discountAmount.toLocaleString()}</span>
+        {appliedDiscounts.map((discount) => (
+          <div key={discount.code} className="flex justify-between mb-2 text-green-600">
+            <span>Discount ({discount.code}):</span>
+            <div className="flex items-center space-x-2">
+              <span>-₹{discount.discountAmount.toLocaleString()}</span>
+              <motion.button
+                onClick={() => onRemoveDiscount(discount.code)}
+                className="text-xs text-red-500 hover:text-red-700"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label={`Remove ${discount.code} discount`}
+              >
+                Remove
+              </motion.button>
+            </div>
           </div>
-        )}
+        ))}
         <div className="flex justify-between text-xl font-semibold text-gray-800">
           <span>Total:</span>
           <span>₹{total.toLocaleString()}</span>
         </div>
         <motion.button
-          onClick={() => navigate("/app/checkout", { state: { appliedDiscount, cartItems } })}
+          onClick={() => navigate("/app/checkout", { state: { appliedDiscounts, cartItems } })}
           className="mt-4 w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

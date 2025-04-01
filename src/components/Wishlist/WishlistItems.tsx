@@ -7,7 +7,7 @@ import { WISHLIST_MESSAGES } from "../../constants/wishlistConstants";
 interface WishlistItemsProps {
   items: WishlistItem[];
   onRemove: (item: WishlistItem) => void;
-  onProductClick: (productId: string) => void;
+  onProductClick: (item: WishlistItem) => void;
   isRemoving: boolean;
 }
 

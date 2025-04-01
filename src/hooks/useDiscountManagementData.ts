@@ -38,7 +38,6 @@ export const useDiscountManagementData = () => {
     enabled: !!token && role === "admin",
   });
 
-  console.log(discountsData,"disdata")
 
   const filteredDiscounts = useMemo(() => {
     if (!discountsData) return [];
@@ -178,7 +177,7 @@ export const useDiscountManagementData = () => {
       toast.error(DISCOUNT_MESSAGES.ADMIN_REQUIRED);
       navigate("/app/home");
     }
-    return { token: null, role: null }; // Early return for invalid states
+    return { token: null, role: null }; 
   }
 
   return {

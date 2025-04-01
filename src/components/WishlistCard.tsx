@@ -1,13 +1,13 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaTrash } from "react-icons/fa";
-import { WishlistItem } from "../types/types";
+import {  WishlistItem } from "../types/types";
 import { WISHLIST_MESSAGES } from "../constants/wishlistConstants";
 
 interface WishlistCardProps {
   item: WishlistItem;
   onRemove: (item: WishlistItem) => void;
-  onProductClick: (productId: string) => void;
+  onProductClick: (item: WishlistItem) => void;
   isRemoving: boolean;
 }
 
@@ -29,7 +29,7 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({
           src={item.productId.image}
           alt={item.productId.name}
           className="w-32 h-32 object-cover rounded-md mb-4 cursor-pointer"
-          onClick={() => onProductClick(item?.productId?._id)}
+          onClick={() => onProductClick(item)}
         />
         <h3 className="text-lg font-semibold text-gray-700">{item.productId.name}</h3>
         <p className="text-gray-600">₹{item.productId.price.toLocaleString()}</p>

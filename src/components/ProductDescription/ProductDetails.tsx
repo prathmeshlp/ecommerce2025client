@@ -20,6 +20,8 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({
   onAddToCart,
   onBuyNow,
 }) => {
+
+  console.log(product,"product")
   // Function to render star ratings
   const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating); // Number of full stars

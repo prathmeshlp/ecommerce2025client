@@ -6,6 +6,7 @@ import { ProductDetails } from "../components/ProductDescription/ProductDetails"
 import { ProductDescription } from "../components/ProductDescription/ProductDescription";
 import { ProductReviewsSection } from "../components/ProductDescription/ProductReviewsSection";
 import { PRODUCT_MESSAGES } from "../constants/productConstants";
+// import { useLocation } from "react-router-dom";
 
 const ProductDescriptionPage: React.FC = () => {
   const {
@@ -16,6 +17,9 @@ const ProductDescriptionPage: React.FC = () => {
     handleBuyNow,
     handleGoBack,
   } = useProductActions();
+
+  // const location = useLocation()
+  // console.log(location,"location")
 
   if (!product) {
     return (

@@ -1,11 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../redux/store";
+import { useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { createOrder, verifyPayment } from "../api/orderApi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { clearCart } from "../redux/cartSlice";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import {
   CartItem,
   AppliedDiscount,
@@ -13,35 +13,70 @@ import {
   RazorpayOptions,
   RazorpayPaymentResponse,
   ShippingAddress,
+  ApiResponse,
 } from "../types/types";
 import { CHECKOUT_MESSAGES } from "../constants/checkoutConstants";
 import { useRazorpayScript } from "./useRazorpayScript";
 
 export const useCheckoutData = () => {
-  const cartItems = useSelector((state: RootState) => state.cart.items) as CartItem[];
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { appliedDiscount, buyNowItem } = (location.state as {
-    appliedDiscount?: AppliedDiscount;
-    buyNowItem?: CartItem;
-  }) || {};
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const itemsToCheckout = buyNowItem ? [buyNowItem] : cartItems;
+  const { appliedDiscounts, cartItems } =
+    (location.state as {
+      appliedDiscounts?: AppliedDiscount[];
+      cartItems?: CartItem[];
+    }) || {};
 
   const subtotal = useMemo(() => {
-    return itemsToCheckout.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  }, [itemsToCheckout]);
+    return (
+      cartItems?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0
+    );
+  }, [cartItems]);
+
+  const getBestDiscountedPrice = (productId: string): number => {
+    const discountsForItem = appliedDiscounts
+      ?.flatMap((d) => d.discountedItems)
+      .filter((di) => di.productId === productId);
+    if (!discountsForItem || discountsForItem.length === 0) {
+      const item = cartItems?.find((i) => i.productId === productId);
+      return item ? item.price : 0;
+    }
+    return Math.min(...discountsForItem.map((di) => di.discountedPrice));
+  };
 
   const total = useMemo(() => {
-    return appliedDiscount ? appliedDiscount.newSubtotal : subtotal;
-  }, [subtotal, appliedDiscount]);
+    return (
+      cartItems?.reduce((sum, item) => {
+        const bestPrice = getBestDiscountedPrice(item.productId);
+        return sum + bestPrice * item.quantity;
+      }, 0) || 0
+    );
+  }, [cartItems, appliedDiscounts]);
 
-  const orderMutation = useMutation<OrderResponse, Error, { items: CartItem[]; shippingAddress: ShippingAddress; discountCode?: string }>({
+  console.log(useRazorpayScript());
+
+  const orderMutation = useMutation<
+    ApiResponse<OrderResponse>,
+    Error,
+    {
+      items: CartItem[];
+      shippingAddress: ShippingAddress;
+      discountCode?: string[];
+    }
+  >({
     mutationFn: createOrder,
-    onSuccess: (data) => initiateRazorpayPayment(data),
-    onError: (error) => toast.error(error.message || CHECKOUT_MESSAGES.ORDER_ERROR),
+    onSuccess: (res) => {
+      console.log("Order mutation success:", res);
+      if (res.success && res.data) {
+        initiateRazorpayPayment(res.data);
+      } else {
+        toast.error("Order created but invalid response data.");
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message || CHECKOUT_MESSAGES.ORDER_ERROR);
+    },
   });
 
   const verifyMutation = useMutation({
@@ -49,7 +84,7 @@ export const useCheckoutData = () => {
     onSuccess: (data) => {
       if (data.success) {
         toast.success(CHECKOUT_MESSAGES.ORDER_SUCCESS);
-        if (!buyNowItem) dispatch(clearCart());
+        if (cartItems) dispatch(clearCart());
         navigate("/app/orders");
       } else {
         toast.error("Payment verification failed.");
@@ -59,7 +94,7 @@ export const useCheckoutData = () => {
   });
 
   const initiateRazorpayPayment = (data: OrderResponse) => {
-    if (!window.Razorpay) {
+    if (!useRazorpayScript || !window.Razorpay) {
       toast.error(CHECKOUT_MESSAGES.SCRIPT_ERROR);
       return;
     }
@@ -78,32 +113,38 @@ export const useCheckoutData = () => {
           razorpay_signature: response.razorpay_signature,
         });
       },
-      prefill: { email: "customer@example.com" }, // Replace with user email if available
+      prefill: { email: "customer@example.com" },
       theme: { color: "#3b82f6" },
     };
 
     const rzp = new window.Razorpay(options);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rzp.on("payment.failed", (response: any) => {
-      toast.error(CHECKOUT_MESSAGES.PAYMENT_FAILED + response.error.description);
+      toast.error(
+        CHECKOUT_MESSAGES.PAYMENT_FAILED + (response.error.description || "")
+      );
     });
     rzp.open();
   };
 
   const handleCheckout = (shippingAddress: ShippingAddress) => {
+    if (!cartItems || cartItems.length === 0) {
+      toast.error("Cart is empty");
+      return;
+    }
     const payload = {
-      items: itemsToCheckout,
+      items: cartItems,
       shippingAddress,
-      discountCode: appliedDiscount?.code,
+      discountCode: appliedDiscounts?.map((item) => item.code) || [],
     };
     orderMutation.mutate(payload);
   };
 
   return {
-    itemsToCheckout,
+    cartItems,
     subtotal,
     total,
-    appliedDiscount,
+    appliedDiscounts,
     handleCheckout,
     orderMutation,
     scriptLoaded: useRazorpayScript(),
