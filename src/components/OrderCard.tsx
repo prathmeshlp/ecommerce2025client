@@ -63,10 +63,14 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
           <span>Subtotal:</span>
           <span>₹{order.subtotal}</span>
         </div>
-        {order.discount && (
-          <div className="flex justify-between text-green-600">
-            <span>Discount ({order.discount.code}):</span>
-            <span>-₹{order.discount.amount}</span>
+        {order.discount && order.discount.length > 0 && (
+          <div className="text-green-600">
+            {order.discount.map((discount, index) => (
+              <div key={index} className="flex justify-between">
+                <span>Discount ({discount.code}):</span>
+                <span>-₹{discount.amount}</span>
+              </div>
+            ))}
           </div>
         )}
         <div className="flex justify-between text-lg font-semibold text-gray-800">
